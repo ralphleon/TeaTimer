@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Tea Timer</string>
+<string name="Start">Start</string>
+<string name="Stop">Stop</string>
+
+<string name="Notification">Tea time!</string>
+</resources>
