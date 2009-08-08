@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="tea_fill">#909B6B</color>
+	<color name="tea_fill">#c9ea91</color>
+<color name="tea_bg">#101010</color>
 </resources>
 

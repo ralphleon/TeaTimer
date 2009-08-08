@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -81,6 +82,7 @@ public class TeaTimer extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+    	// TODO use this bundle
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -88,9 +90,10 @@ public class TeaTimer extends Activity {
         startButton.setOnClickListener(startListener);
         
         BotTimer.setHandler(handler);
-		//clearTime();
-	}
-
+        
+        clearTime();
+    }
+    
 	public void updateLabel(int time)
 	{
 		TextView label = (TextView)findViewById(R.id.label); 
@@ -101,32 +104,42 @@ public class TeaTimer extends Activity {
 	{
 		ImageView i = (ImageView)findViewById(R.id.imageView);	
 		
-		final int w = i.getWidth();
-		final int h = i.getHeight();
+		//final int w = i.getWidth();
+		//final int h = i.getHeight();
 		
 		// Load the bitmap
 		Bitmap cup  = BitmapFactory.decodeResource(getResources(), R.drawable.cup);
-		int w_b = cup.getWidth();
-		int h_b = cup.getHeight();
+		int w = cup.getWidth();
+		int h = cup.getHeight();
 		
-		// Position the bitmap correctly
-		float x = w/2.0f - w_b/2.0f;
-		float y = h/2.0f - h_b/2.0f;
-		
-		// Create a black bitmap
 		Bitmap bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.RGB_565);
-		Paint paint = new Paint();
-		paint.setColor(Color.rgb(0,200,0));
-
-		float p = (max == 0) ? 0 : (time/(float)max);
-			
-		RectF rect = new RectF(x,y+h_b*p, x+w_b,y+h_b);
-		Canvas canvas = new Canvas(bitmap);
-		canvas.drawColor(Color.rgb(24,24,24));
-		canvas.drawRect(rect,paint);		
-		canvas.drawBitmap(cup, x, y, paint);
 		
+		Paint paint = new Paint();
+		
+		float p = (max == 0) ? 1 : (time/(float)max);
+		
+		// Define the drawing rects
+		RectF teaRect = new RectF(0,h*p,w,h);
+		RectF fillRect = new RectF(0,0,w,h);
+		
+		Canvas canvas = new Canvas(bitmap);
+		
+		// Fill the entire bg the correct color
+		canvas.drawColor(Color.rgb(24,24,24));
+		
+		// Unused part of the cup
+		paint.setColor(R.color.tea_bg);
+		canvas.drawRect(fillRect, paint);
+		
+		// The filled part of the cup
+		paint.setColor(getResources().getColor(R.color.tea_fill));
+		canvas.drawRect(teaRect,paint);
+		canvas.drawBitmap(cup, 0, 0, paint);
+		
+		// Switch out the bitmap
 		i.setImageBitmap(bitmap);
+	
+		
 	}
 	
 	/** {@inheritDoc} */
@@ -134,7 +147,7 @@ public class TeaTimer extends Activity {
 	protected Dialog onCreateDialog(int id) {
     	switch (id) {
     	case 0:
-        	return new TimePickerDialog(this,
+        	return new AbsTimePickerDialog(this,
                 mTimeSetListener, 0, 0, true);
     	}
     	return null;
@@ -144,7 +157,7 @@ public class TeaTimer extends Activity {
 	 * This only refers to the visual state of the application, used to manage
 	 * the view coming back into focus.
 	 * 
-	 * @param state the visual state that is being enetered
+	 * @param state the visual state that is being entered
 	 */
 	private void enterState(State state)
 	{

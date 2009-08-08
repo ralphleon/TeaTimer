@@ -4,6 +4,14 @@
     android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
     >
+<LinearLayout 
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:paddingLeft="50px"
+	android:paddingRight="50px"
+	>
+
 <TextView 
 	android:id="@+id/label"
     android:layout_width="fill_parent" 
@@ -15,37 +23,25 @@
 	android:paddingBottom="10px"
 	/>
 
-<LinearLayout 
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:paddingLeft="30px"
-	android:paddingRight="30px"
-	>
+
 		<Button 
 			android:id="@+id/stop"
 			android:layout_height="wrap_content" 
 			android:layout_width="fill_parent"
-			android:text="Start"
+			android:text="@string/Start"
 			android:gravity="center"
 			/>
 
 </LinearLayout>
 
-<LinearLayout 
-   	android:orientation="horizontal"
-   	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"			
-	android:padding="20px"
-	>
-	
 	<ImageView
 		android:id="@+id/imageView"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
+		android:padding="20px"
+		android:adjustViewBounds="true"
+		android:scaleType="center" 
 	/>
-
-</LinearLayout>
 
 </LinearLayout>
 
