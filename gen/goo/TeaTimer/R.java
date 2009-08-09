@@ -18,6 +18,7 @@ public final class R {
         public static final int border=0x7f020000;
         public static final int cup=0x7f020001;
         public static final int icon=0x7f020002;
+        public static final int notification=0x7f020003;
     }
     public static final class id {
         public static final int imageView=0x7f070002;

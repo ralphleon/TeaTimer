@@ -23,11 +23,24 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-public class TeaTimer extends Activity {
+/**
+ * The main activity which shows the timer and allows the user to set the time
+ * @author Ralph Gootee (rgootee@gmail.com)
+ */
+public class TimerActivity extends Activity {
 		
+	/** debug string */
+	private final String DEBUG_STR = "TimerActivity";
+	
 	private enum State{ RUNNING, STOPPED };
 	
 	private State mCurrentState = State.STOPPED;
+	
+	/** Last time update from handler */
+	private int mLastTime = 0;
+	
+	/** The maximum time */
+	private int mMax = 0;
 	
 	/** Listener for the button press */
 	private OnClickListener startListener = new OnClickListener()
@@ -50,8 +63,9 @@ public class TeaTimer extends Activity {
 	private TimePickerDialog.OnTimeSetListener mTimeSetListener =
     	new TimePickerDialog.OnTimeSetListener() {
         	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        		int set  = hourOfDay*60*60*1000 + minute*60*1000;
-				onTimerStart(set);
+        		mMax = hourOfDay*60*60*1000 + minute*60*1000;
+        		
+				onTimerStart(mMax);
 			}
     };
 
@@ -70,10 +84,10 @@ public class TeaTimer extends Activity {
 				Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
 			}
 			else{
-				// TODO update the image code here
+				mLastTime = msg.arg1;
+				
 				enterState(State.RUNNING);
-				updateLabel(msg.arg1);
-				updateImage(msg.arg1,msg.arg2);
+				onUpdateTime();
 			}
 		}
     };
@@ -82,30 +96,70 @@ public class TeaTimer extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-    	// TODO use this bundle
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
 		Button startButton = (Button)findViewById(R.id.stop);
         startButton.setOnClickListener(startListener);
         
-        BotTimer.setHandler(handler);
+        TimerService.setHandler(handler);
         
         clearTime();
     }
     
+    /** {@inheritDoc} */
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+    	Log.v(DEBUG_STR,"Saved the application state. ");
+    
+    	savedInstanceState.putString("MyString", "Welcome back to Android");
+    	
+    	savedInstanceState.putInt("LastTime", mLastTime);
+    	savedInstanceState.putInt("Max",mMax);
+    	
+    	super.onSaveInstanceState(savedInstanceState);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) 
+    {
+    	super.onRestoreInstanceState(savedInstanceState);
+    	
+    	mLastTime = savedInstanceState.getInt("LastTime");
+    	mMax = savedInstanceState.getInt("Max");
+    	
+    	Log.v(DEBUG_STR,"Restored the application state, t=" + mLastTime);
+    	
+    	onUpdateTime();
+    }
+    
+    /**
+     * Updates the time 
+     */
+    public void onUpdateTime()
+    {
+    	updateLabel(mLastTime);
+		updateImage(mLastTime,mMax);  	
+    }
+    /**
+     * Updates the text label with the given time
+     * @param time in milliseconds
+     */
 	public void updateLabel(int time)
 	{
 		TextView label = (TextView)findViewById(R.id.label); 
-		label.setText( BotTimer.time2str(time));
+		label.setText( TimerService.time2str(time));
 	}
-	
+	/**
+	 * Updates the image to be in sync with the current time
+	 * @param time in milliseconds
+	 * @param max the original time set in milliseconds
+	 */
 	public void updateImage(int time,int max)
 	{
 		ImageView i = (ImageView)findViewById(R.id.imageView);	
-		
-		//final int w = i.getWidth();
-		//final int h = i.getHeight();
 		
 		// Load the bitmap
 		Bitmap cup  = BitmapFactory.decodeResource(getResources(), R.drawable.cup);
@@ -179,14 +233,14 @@ public class TeaTimer extends Activity {
 	private void onTimerStop()
 	{
 		enterState(State.STOPPED);		
-		Intent svc = new Intent(this, BotTimer.class);
+		Intent svc = new Intent(this, TimerService.class);
 		stopService(svc);
 	}
 
 	private void onTimerStart(int time)
 	{
 		enterState(State.RUNNING);
-		Intent svc = new Intent(this, BotTimer.class);
+		Intent svc = new Intent(this, TimerService.class);
 	    svc.putExtra("Time",time);
 		startService(svc);
 	}

@@ -19,7 +19,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-public class BotTimer extends Service
+public class TimerService extends Service
 {
 	private static final int UPDATE_INTERVAL = 1000;
  	private static final int HELLO_ID = 1;
@@ -81,9 +81,10 @@ public class BotTimer extends Service
 		Message msg = new Message();
 		msg.arg1 = mTime;
 		msg.arg2 = mMax;
-		mHandler.sendMessage(msg);
 		
-		Log.i(getClass().getSimpleName(), "Timer tic");	
+		if(mHandler != null){
+			mHandler.sendMessage(msg);
+		}
 	}
 	
 	public int getTime(){ return mTime;}
@@ -116,7 +117,7 @@ public class BotTimer extends Service
 		CharSequence text = getText(R.string.Notification);
 		CharSequence textLatest = "Timer for " + time2str(mMax) + " has passed.";
 		
-        Notification notification = new Notification(android.R.drawable.stat_sys_warning,
+        Notification notification = new Notification(R.drawable.notification,
         		text,
                 System.currentTimeMillis());
 
@@ -125,7 +126,7 @@ public class BotTimer extends Service
       	notification.sound = uri;
       	  
         // TODO fix this to load the main timer activity
-      	Intent intent = new Intent(this,TeaTimer.class);
+      	Intent intent = new Intent(this,TimerActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, 0);
 
         notification.setLatestEventInfo(this, text,
