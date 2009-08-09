@@ -148,7 +148,7 @@ public class TeaTimer extends Activity {
     	switch (id) {
     	case 0:
         	return new AbsTimePickerDialog(this,
-                mTimeSetListener, 0, 0, true);
+                mTimeSetListener, 0, 0);
     	}
     	return null;
 	}

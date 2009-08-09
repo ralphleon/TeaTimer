@@ -13,6 +13,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -28,6 +29,7 @@ public class BotTimer extends Service
 	/** Timer object used for stopwatch logic**/
 	private int mTime=0;
 	
+	/** The end time */
 	private int mMax=0;
 
 	/** increment for the timer */
@@ -112,16 +114,22 @@ public class BotTimer extends Service
 	public void showFinishedNotification()
 	{
 		CharSequence text = getText(R.string.Notification);
-
-        Notification notification = new Notification(android.R.drawable.stat_sys_warning, text,
+		CharSequence textLatest = "Timer for " + time2str(mMax) + " has passed.";
+		
+        Notification notification = new Notification(android.R.drawable.stat_sys_warning,
+        		text,
                 System.currentTimeMillis());
 
+		// Play a sound!
+		Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
+      	notification.sound = uri;
+      	  
         // TODO fix this to load the main timer activity
-        PendingIntent contentIntent = PendingIntent.getActivity(this,  0,
-                new Intent(this, BotTimer.class), 0);
+      	Intent intent = new Intent(this,TeaTimer.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, 0);
 
-        notification.setLatestEventInfo(this, getString(R.string.Notification),
-                       text, contentIntent);
+        notification.setLatestEventInfo(this, text,
+                       textLatest, contentIntent);
 
         mNM.notify(HELLO_ID, notification);
 	}

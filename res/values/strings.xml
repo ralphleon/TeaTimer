@@ -2,7 +2,7 @@
 <resources>
     
     <string name="app_name">Tea Timer</string>
-<string name="Start">Start</string>
+<string name="Start">Set Timer</string>
 <string name="Stop">Stop</string>
 
 <string name="Notification">Tea time!</string>

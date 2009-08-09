@@ -3,17 +3,45 @@ package goo.TeaTimer;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.widget.TimePicker;
 
+/**
+ * Cool override of the time picker class, to pick a time without regard for the current time
+ * 
+ * @author Ralph Gootee (rgootee@gmail.com)
+ *
+ */
 class AbsTimePickerDialog extends TimePickerDialog
 {
-	public AbsTimePickerDialog(Context context, TimePickerDialog.OnTimeSetListener callBack, int hourOfDay, int minute, boolean is24HourView){
+	/**
+	 * Overloaded constructor, very similar to TimePickerDialog
+	 * @param context the context of the parent
+	 * @param callBack the callback function
+	 * @param h the default hour
+	 * @param m the default minute
+	 */
+	public AbsTimePickerDialog(Context context, TimePickerDialog.OnTimeSetListener callBack, int h,int m){
 		
-		super(context, callBack, hourOfDay, minute, is24HourView);
+		super(context, callBack, h, m, true);
+		
+		CharSequence title = h + " hours & " + m + " min";
+		super.setTitle(title);
 	}
 	
-	public void setTitle(CharSequence title)
-	{
-		//CharSequence x = title;
+	/**
+	 * We don't want the parent to set the title... ever
+	 */
+	@Override
+	public void setTitle(CharSequence ignore)
+	{		
+	}
 	
+	/** {@inheritDoc} */
+	@Override
+	public void onTimeChanged(TimePicker ignore,int h,int m)
+	{
+		CharSequence title = h + " hours & " + m + " min";
+		super.setTitle(title);
+		
 	}
 }

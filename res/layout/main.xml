@@ -8,40 +8,39 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:paddingLeft="50px"
-	android:paddingRight="50px"
-	>
-
-<TextView 
-	android:id="@+id/label"
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-	android:text="00:00:00"
-	android:textSize="60px"
-	android:gravity="center"
-	android:paddingTop="20px"
-	android:paddingBottom="10px"
-	/>
-
-
-		<Button 
-			android:id="@+id/stop"
-			android:layout_height="wrap_content" 
-			android:layout_width="fill_parent"
-			android:text="@string/Start"
-			android:gravity="center"
-			/>
+	android:layout_marginLeft="10px"
+	android:layout_marginRight="10px"
+	android:paddingLeft="40px"
+	android:paddingRight="40px"
+	android:background="@drawable/border"
+	android:paddingBottom="15px" android:layout_marginTop="15px">
+	
+	<TextView 
+		android:id="@+id/label"
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+		android:text="00:00"
+		android:textSize="70px"
+		android:gravity="center" android:paddingBottom="5px"/>
+		
+	<Button 
+		android:id="@+id/stop"
+		android:layout_height="wrap_content" 
+		android:layout_width="fill_parent"
+		android:text="@string/Start"
+		android:gravity="center"
+		/>
 
 </LinearLayout>
 
-	<ImageView
-		android:id="@+id/imageView"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:padding="20px"
-		android:adjustViewBounds="true"
-		android:scaleType="center" 
-	/>
+<ImageView
+	android:id="@+id/imageView"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:padding="20px"
+	android:adjustViewBounds="true"
+	android:scaleType="center" 
+/>
 
 </LinearLayout>
 
