@@ -1,5 +1,11 @@
-/*  BotTimer.java 
- * (C) 2009 Ralph Gootee <rgootee@gmail.com>
+/* @file TimerService.java
+ * 
+ * TeaTimer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version. More info: http://www.gnu.org/licenses/
+ *  
+ * Copyright 2009 Ralph Gootee <rgootee@gmail.com>
  *  
  */
 
@@ -19,6 +25,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
+/**
+ * Countdown timer service
+ * @author Ralph Gootee (rgootee@gmail.com)
+ *
+ */
 public class TimerService extends Service
 {
 	private static final int UPDATE_INTERVAL = 1000;
@@ -115,7 +126,7 @@ public class TimerService extends Service
 	public void showFinishedNotification()
 	{
 		CharSequence text = getText(R.string.Notification);
-		CharSequence textLatest = "Timer for " + time2str(mMax) + " has passed.";
+		CharSequence textLatest = "Timer for " + time2humanStr(mMax);
 		
         Notification notification = new Notification(R.drawable.notification,
         		text,
@@ -154,7 +165,31 @@ public class TimerService extends Service
 			return String.format("%02d:%02d:%02d",hour,minutes, seconds);
 		}
 	}
+	
+	static public String time2humanStr(int time)
+	{
+		int seconds = (int) (time / 1000);
+		int minutes = seconds / 60;
+		int hour = minutes / 60;
 
+		minutes = minutes % 60;
+   		seconds = seconds % 60;
+   		
+   		String r = new String();
+   		
+   		// Ugly string formating
+   		if(hour != 0){	
+   			r += hour + " hour";					
+   			if(hour == 1) r+= "s";
+   			r+= " and ";
+   		}
+   		
+   		r += minutes + " min";
+   		if(minutes != 1) r+= "s";
+		
+   		return r;
+	}
+	
 	public String getTimeString()
 	{	
 		return time2str(mTime);
