@@ -20,6 +20,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -32,6 +33,16 @@ import android.util.Log;
  */
 public class TimerService extends Service
 {
+	private final IBinder mBinder = new TimerBinder();
+	 
+	/* Binder to set the handler */
+	public class TimerBinder extends Binder 
+	{    
+		public void setHandler(Handler handle){
+			mHandler = handle;
+		}
+	}
+
 	private static final int UPDATE_INTERVAL = 1000;
  	private static final int HELLO_ID = 1;
  
@@ -47,18 +58,16 @@ public class TimerService extends Service
 	private Timer mTimer = null;
 	
 	/** Handler for dealing with updates **/
-	private static Handler mHandler;
+	private Handler mHandler;
 
-	public static void setHandler(Handler h) {
-			mHandler = h;
-	}
-	
-	@Override public IBinder onBind(Intent intent) {
-		  return null;
+	@Override public IBinder onBind(Intent intent) {		  
+		return mBinder;
 	}
 
 	@Override public void onCreate() {
 		super.onCreate();
+		
+		mHandler = new Handler();
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	}
 
@@ -135,8 +144,7 @@ public class TimerService extends Service
 		// Play a sound!
 		Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
       	notification.sound = uri;
-      	  
-        // TODO fix this to load the main timer activity
+      	
       	Intent intent = new Intent(this,TimerActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, 0);
 
@@ -166,6 +174,22 @@ public class TimerService extends Service
 		}
 	}
 	
+	/**
+	 * Returns the suggested text size for the string. A hack.
+	 * @param str the time string
+	 * @return the suggested text size to accommodate the string
+	 */
+	static public int textSize(String str)
+	{
+		if(str.length() > 5){ 
+			return 50;
+		}else{
+			return 70;
+		}
+		
+		
+	}
+		
 	static public String time2humanStr(int time)
 	{
 		int seconds = (int) (time / 1000);

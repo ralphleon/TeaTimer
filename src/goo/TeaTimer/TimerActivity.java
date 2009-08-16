@@ -14,8 +14,10 @@ package goo.TeaTimer;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -24,6 +26,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -53,6 +56,18 @@ public class TimerActivity extends Activity {
 	/** The maximum time */
 	private int mMax = 0;
 	
+	   private ServiceConnection mConnection = new ServiceConnection() {
+	        public void onServiceConnected(ComponentName className, IBinder service) {
+	        	Log.v(DEBUG_STR,"Service Connected!");
+	     
+	        	((TimerService.TimerBinder)service).setHandler(mHandler);
+	        }
+
+	        public void onServiceDisconnected(ComponentName className) {
+	        	Log.e(DEBUG_STR,"Error! Service Disconnected!");
+	        }
+	    };
+	
 	/** Listener for the button press */
 	private OnClickListener startListener = new OnClickListener()
     {
@@ -81,7 +96,7 @@ public class TimerActivity extends Activity {
     };
 
 	/** Handler for the message from the timer service */
-	private Handler handler = new Handler() {
+	private Handler mHandler = new Handler() {
 		
 		@Override
         public void handleMessage(Message msg) {
@@ -112,8 +127,6 @@ public class TimerActivity extends Activity {
 
 		Button startButton = (Button)findViewById(R.id.stop);
         startButton.setOnClickListener(startListener);
-        
-        TimerService.setHandler(handler);
         
         clearTime();
     }
@@ -161,7 +174,11 @@ public class TimerActivity extends Activity {
 	public void updateLabel(int time)
 	{
 		TextView label = (TextView)findViewById(R.id.label); 
-		label.setText( TimerService.time2str(time));
+		
+		String str = TimerService.time2str(time);
+		int size = TimerService.textSize(str);
+		label.setTextSize(size);
+		label.setText(str);
 	}
 	/**
 	 * Updates the image to be in sync with the current time
@@ -170,6 +187,10 @@ public class TimerActivity extends Activity {
 	 */
 	public void updateImage(int time,int max)
 	{
+		// buffer 
+		int topBuffer = 13;
+		int bottomBuffer = 15;
+		
 		ImageView i = (ImageView)findViewById(R.id.imageView);	
 		
 		// Load the bitmap
@@ -181,10 +202,10 @@ public class TimerActivity extends Activity {
 		
 		Paint paint = new Paint();
 		
-		float p = (max == 0) ? 1 : (time/(float)max);
+		float p = (max == 0) ? 0 : (time/(float)max);
 		
 		// Define the drawing rects
-		RectF teaRect = new RectF(0,h*p,w,h);
+		RectF teaRect = new RectF(0,(h-topBuffer)*p+bottomBuffer,w,h+bottomBuffer);
 		RectF fillRect = new RectF(0,0,w,h);
 		
 		Canvas canvas = new Canvas(bitmap);
@@ -245,15 +266,21 @@ public class TimerActivity extends Activity {
 	{
 		enterState(State.STOPPED);		
 		Intent svc = new Intent(this, TimerService.class);
+		unbindService(mConnection);
 		stopService(svc);
 	}
 
 	private void onTimerStart(int time)
 	{
+		Log.v(DEBUG_STR,"Starting the timer...");
+		
 		enterState(State.RUNNING);
 		Intent svc = new Intent(this, TimerService.class);
 	    svc.putExtra("Time",time);
 		startService(svc);
+		
+		svc.removeExtra("Time");
+		bindService(svc, mConnection,Context.BIND_AUTO_CREATE);
 	}
 
 	private void clearTime()
