@@ -58,7 +58,7 @@ public class TimerActivity extends Activity {
 	
 	   private ServiceConnection mConnection = new ServiceConnection() {
 	        public void onServiceConnected(ComponentName className, IBinder service) {
-	        	Log.v(DEBUG_STR,"Service Connected!");
+	        	Log.v(DEBUG_STR,"Service connected & bound!");
 	     
 	        	((TimerService.TimerBinder)service).setHandler(mHandler);
 	        }
@@ -132,6 +132,27 @@ public class TimerActivity extends Activity {
     }
     
     /** {@inheritDoc} */
+    @Override 
+    public void onResume()
+    {
+    	super.onResume();
+    	
+    	Log.v(DEBUG_STR,"Resuming...");
+    	
+    	// Bind to the service to give it an active handle 
+		Intent svc = new Intent(this, TimerService.class);
+		bindService(svc, mConnection,Context.BIND_AUTO_CREATE);
+    }
+    
+    /** {@inheritDoc }*/
+    @Override
+	protected void onPause()
+    {
+    	unbindService(mConnection);
+    	super.onPause();
+    }
+     
+    /** {@inheritDoc} */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
@@ -149,6 +170,8 @@ public class TimerActivity extends Activity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) 
     {
+    	Log.v(DEBUG_STR,"Restoring saved state...");
+    	
     	super.onRestoreInstanceState(savedInstanceState);
     	
     	mLastTime = savedInstanceState.getInt("LastTime");
@@ -277,10 +300,9 @@ public class TimerActivity extends Activity {
 		enterState(State.RUNNING);
 		Intent svc = new Intent(this, TimerService.class);
 	    svc.putExtra("Time",time);
-		startService(svc);
-		
-		svc.removeExtra("Time");
+		startService(svc);		
 		bindService(svc, mConnection,Context.BIND_AUTO_CREATE);
+		
 	}
 
 	private void clearTime()

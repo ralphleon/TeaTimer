@@ -1,0 +1,18 @@
+
+User is within the activity:
+- User can start a timer
+- User can stop a timer
+- The timer shall go off when the time has ran out
+- User can leave the activity by pressing home (pause)
+- User can leave the activity by pressing back (kill)
+
+User has left the activity
+- The timer still executes in the background
+- User can re-enter the activity 
+
+USer has reentered the activity
+- GUI has to be updated to most recent time
+- User is in the activity
+
+
+

@@ -43,7 +43,7 @@ public class TimerService extends Service
 		}
 	}
 
-	private static final int UPDATE_INTERVAL = 1000;
+	private static final int UPDATE_INTERVAL = 500;
  	private static final int HELLO_ID = 1;
  
  	NotificationManager mNM;
@@ -58,10 +58,18 @@ public class TimerService extends Service
 	private Timer mTimer = null;
 	
 	/** Handler for dealing with updates **/
-	private Handler mHandler;
+	private Handler mHandler = null;
 
-	@Override public IBinder onBind(Intent intent) {		  
+	@Override 
+	public IBinder onBind(Intent intent) {
 		return mBinder;
+	}
+	
+	@Override 
+	public boolean onUnbind(Intent intent)
+	{
+		mHandler = null;
+		return false;
 	}
 
 	@Override public void onCreate() {
@@ -81,8 +89,10 @@ public class TimerService extends Service
 	
 	@Override public void onDestroy() 
 	{
-		Log.i(getClass().getSimpleName(), "Timer Service Stopped.");		 
+		Log.i(getClass().getSimpleName(), "Destroying the Timer Service...");		 
 		super.onDestroy();
+		
+		mHandler = null;
 		stopTimer();
 	}
 	
@@ -98,11 +108,11 @@ public class TimerService extends Service
 			stopSelf();
 		}
 		
-		Message msg = new Message();
-		msg.arg1 = mTime;
-		msg.arg2 = mMax;
-		
 		if(mHandler != null){
+			Message msg = new Message();
+			msg.arg1 = mTime;
+			msg.arg2 = mMax;
+			
 			mHandler.sendMessage(msg);
 		}
 	}
@@ -111,7 +121,7 @@ public class TimerService extends Service
 
 	public void stopTimer()
 	{					
-		mTimer.cancel();
+		if(mTimer != null) mTimer.cancel();
 		Log.i(getClass().getSimpleName(), "Timer halted");	
 	}
 
