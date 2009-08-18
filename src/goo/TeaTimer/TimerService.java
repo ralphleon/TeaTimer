@@ -33,17 +33,9 @@ import android.util.Log;
  */
 public class TimerService extends Service
 {
-	private final IBinder mBinder = new TimerBinder();
-	 
-	/* Binder to set the handler */
-	public class TimerBinder extends Binder 
-	{    
-		public void setHandler(Handler handle){
-			mHandler = handle;
-		}
-	}
-
-	private static final int UPDATE_INTERVAL = 500;
+	private final String DEBUG = getClass().getSimpleName();
+	
+	public static final int UPDATE_INTERVAL = 1000;
  	private static final int HELLO_ID = 1;
  
  	NotificationManager mNM;
@@ -56,26 +48,15 @@ public class TimerService extends Service
 
 	/** increment for the timer */
 	private Timer mTimer = null;
-	
-	/** Handler for dealing with updates **/
-	private Handler mHandler = null;
 
 	@Override 
 	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
-	
-	@Override 
-	public boolean onUnbind(Intent intent)
-	{
-		mHandler = null;
-		return false;
+		return null;
 	}
 
 	@Override public void onCreate() {
 		super.onCreate();
 		
-		mHandler = new Handler();
 		mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 	}
 
@@ -89,11 +70,10 @@ public class TimerService extends Service
 	
 	@Override public void onDestroy() 
 	{
-		Log.i(getClass().getSimpleName(), "Destroying the Timer Service...");		 
+		Log.i(DEBUG, "Destroying the Timer Service...");		 
 		super.onDestroy();
 		
-		mHandler = null;
-		stopTimer();
+		if(mTimer != null) mTimer.cancel();
 	}
 	
 	private void updateTimer()
@@ -102,28 +82,14 @@ public class TimerService extends Service
 		
 		if(mTime <= 0 )
 		{
+			Log.v(DEBUG,"Timer has finished! Showing notification & halting service ...");
 			showFinishedNotification();
-			mTime = 0;
-			stopTimer();
 			stopSelf();
 		}
 		
-		if(mHandler != null){
-			Message msg = new Message();
-			msg.arg1 = mTime;
-			msg.arg2 = mMax;
-			
-			mHandler.sendMessage(msg);
-		}
 	}
 	
 	public int getTime(){ return mTime;}
-
-	public void stopTimer()
-	{					
-		if(mTimer != null) mTimer.cancel();
-		Log.i(getClass().getSimpleName(), "Timer halted");	
-	}
 
 	public void startTimer(int time)
 	{		
@@ -139,7 +105,7 @@ public class TimerService extends Service
 	      		0,
 	      		UPDATE_INTERVAL);
 	  		
-	  	Log.i(getClass().getSimpleName(), "Timer started!!!");	
+	  	Log.i(getClass().getSimpleName(), "Timer started for " + time2humanStr(time) + "!");	
 	}
 	
 	public void showFinishedNotification()
@@ -164,26 +130,6 @@ public class TimerService extends Service
         mNM.notify(HELLO_ID, notification);
 	}
 
-	/** Converts a millisecond time to a string time 
-	 * @param time is the time in milliseconds
-	 * @return the formated string
-	 */
-	static public String time2str(int time)
-	{	
-		int seconds = (int) (time / 1000);
-		int minutes = seconds / 60;
-		int hour = minutes / 60;
-
-		minutes = minutes % 60;
-   		seconds = seconds % 60;
-
-		if(hour == 0){
-			return String.format("%02d:%02d",minutes, seconds);
-		}else{
-			return String.format("%02d:%02d:%02d",hour,minutes, seconds);
-		}
-	}
-	
 	/**
 	 * Returns the suggested text size for the string. A hack.
 	 * @param str the time string
@@ -196,11 +142,24 @@ public class TimerService extends Service
 		}else{
 			return 70;
 		}
-		
-		
 	}
-		
-	static public String time2humanStr(int time)
+	
+	/** Converts a millisecond time to a string time 
+	 * @param time is the time in milliseconds
+	 * @return the formated string
+	 */
+	static public String time2str(int ms)
+	{	
+		int [] time = time2Mhs(ms);
+
+		if(time[0] == 0){
+			return String.format("%02d:%02d",time[1],time[2]);
+		}else{
+			return String.format("%02d:%02d:%02d",time[0],time[1],time[2]);
+		}
+	}
+	
+	static public int [] time2Mhs(int time)
 	{
 		int seconds = (int) (time / 1000);
 		int minutes = seconds / 60;
@@ -209,6 +168,19 @@ public class TimerService extends Service
 		minutes = minutes % 60;
    		seconds = seconds % 60;
    		
+		int [] timeVec = new int[3];
+		timeVec[0] = hour;
+		timeVec[1] = minutes;
+		timeVec[2] = seconds;
+	
+		return timeVec;
+	}
+	
+	static public String time2humanStr(int time)
+	{
+		int [] timeVec = time2Mhs(time);
+		int hour = timeVec[0], minutes=timeVec[1];
+		
    		String r = new String();
    		
    		// Ugly string formating
@@ -222,10 +194,5 @@ public class TimerService extends Service
    		if(minutes != 1) r+= "s";
 		
    		return r;
-	}
-	
-	public String getTimeString()
-	{	
-		return time2str(mTime);
 	}
 }

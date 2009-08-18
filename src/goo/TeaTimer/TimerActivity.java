@@ -11,28 +11,23 @@
 
 package goo.TeaTimer;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -41,7 +36,7 @@ import android.widget.Toast;
  * The main activity which shows the timer and allows the user to set the time
  * @author Ralph Gootee (rgootee@gmail.com)
  */
-public class TimerActivity extends Activity {
+public class TimerActivity extends Activity implements OnClickListener{
 		
 	/** debug string */
 	private final String DEBUG_STR = "TimerActivity";
@@ -50,48 +45,21 @@ public class TimerActivity extends Activity {
 	
 	private State mCurrentState = State.STOPPED;
 	
-	/** Last time update from handler */
+	/** The maximum time */
 	private int mLastTime = 0;
 	
-	/** The maximum time */
-	private int mMax = 0;
+	private int mTime = 0;
 	
-	   private ServiceConnection mConnection = new ServiceConnection() {
-	        public void onServiceConnected(ComponentName className, IBinder service) {
-	        	Log.v(DEBUG_STR,"Service connected & bound!");
-	     
-	        	((TimerService.TimerBinder)service).setHandler(mHandler);
-	        }
-
-	        public void onServiceDisconnected(ComponentName className) {
-	        	Log.e(DEBUG_STR,"Error! Service Disconnected!");
-	        }
-	    };
-	
-	/** Listener for the button press */
-	private OnClickListener startListener = new OnClickListener()
-    {
-        public void onClick(View v)
-        {
-			Button b = (Button)v;
-			
-			//TODO start using the string xml file
-			if(b.getText() == getText(R.string.Stop)){	
-				onTimerStop();	
-			}else{
-				showDialog(0);			
-		
-			}
-        }
-	};
+	/** increment for the timer */
+	private Timer mTimer = null;
 	
 	/** the call-back received when the user "sets" the time in the dialog */
 	private TimePickerDialog.OnTimeSetListener mTimeSetListener =
     	new TimePickerDialog.OnTimeSetListener() {
         	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        		mMax = hourOfDay*60*60*1000 + minute*60*1000;
+        		mLastTime = hourOfDay*60*60*1000 + minute*60*1000;
         		
-				onTimerStart(mMax);
+				onTimerStart(mLastTime,true);
 			}
     };
 
@@ -101,7 +69,7 @@ public class TimerActivity extends Activity {
 		@Override
         public void handleMessage(Message msg) {
 			
-			if(msg.arg1 == 0){
+			if(msg.arg1 <= 0){
 				onTimerStop();
 				
 				// Show a finished toast since the view was in focus!
@@ -110,7 +78,7 @@ public class TimerActivity extends Activity {
 				Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
 			}
 			else{
-				mLastTime = msg.arg1;
+				mTime = msg.arg1;
 				
 				enterState(State.RUNNING);
 				onUpdateTime();
@@ -122,64 +90,72 @@ public class TimerActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+    	Log.v(DEBUG_STR,"Activity has been created...");
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
 		Button startButton = (Button)findViewById(R.id.stop);
-        startButton.setOnClickListener(startListener);
+        startButton.setOnClickListener(this);
         
         clearTime();
     }
     
-    /** {@inheritDoc} */
+    @Override 
+    public void onPause()
+    {
+    	super.onPause();
+    	Log.v(DEBUG_STR,"Timer Activity is pausing...");
+    	
+    	// Save our settings
+    	SharedPreferences settings = getPreferences(0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("LastTime", mLastTime);
+ 
+        
+        // Cancel our thread
+    	if(mTimer != null){
+    		mTimer.cancel();
+    		editor.putLong("TimeStamp", new Date().getTime() + mTime);
+    	}else{
+    		editor.putBoolean("Running",false);
+    		editor.putLong("TimeStamp", -1);
+    	}
+    	
+        editor.commit();
+        
+    }
+    
     @Override 
     public void onResume()
     {
     	super.onResume();
+    	Log.v(DEBUG_STR,"Timer is resuming...");
     	
-    	Log.v(DEBUG_STR,"Resuming...");
-    	
-    	// Bind to the service to give it an active handle 
-		Intent svc = new Intent(this, TimerService.class);
-		bindService(svc, mConnection,Context.BIND_AUTO_CREATE);
-    }
-    
-    /** {@inheritDoc }*/
-    @Override
-	protected void onPause()
-    {
-    	unbindService(mConnection);
-    	super.onPause();
-    }
-     
-    /** {@inheritDoc} */
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
-    {
-    	Log.v(DEBUG_STR,"Saved the application state. ");
-    
-    	savedInstanceState.putString("MyString", "Welcome back to Android");
-    	
-    	savedInstanceState.putInt("LastTime", mLastTime);
-    	savedInstanceState.putInt("Max",mMax);
-    	
-    	super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) 
-    {
-    	Log.v(DEBUG_STR,"Restoring saved state...");
-    	
-    	super.onRestoreInstanceState(savedInstanceState);
-    	
-    	mLastTime = savedInstanceState.getInt("LastTime");
-    	mMax = savedInstanceState.getInt("Max");
-    	
-    	Log.v(DEBUG_STR,"Restored the application state, t=" + mLastTime);
-    	
-    	onUpdateTime();
+    	// check the timestamp from the last update and start the timer.
+    	// assumes the data has already beed loaded?
+    	SharedPreferences settings = getPreferences(0);
+        mLastTime = settings.getInt("LastTime",0);
+        
+        long timeStamp = settings.getLong("TimeStamp", -1);
+        
+        if(timeStamp != -1){
+        	Log.v(DEBUG_STR,"Timer was running, seeing if we need to execute.");
+        	
+        	Date now = new Date();
+        	Date then = new Date(timeStamp);
+        	
+        	if(then.after(now))
+        	{
+        		int delta = (int)(then.getTime() - now.getTime());		
+        		Log.v(DEBUG_STR,"Timer should still be running, has " +  TimerService.time2humanStr(delta));
+        		onTimerStart(delta,false);
+        	}else{
+        		Log.v(DEBUG_STR,"Timer has long since expired.");
+        	}
+        }
+        
+        Log.v(DEBUG_STR,"Preference loaded, mLastTime=" + mLastTime);
     }
     
     /**
@@ -187,8 +163,10 @@ public class TimerActivity extends Activity {
      */
     public void onUpdateTime()
     {
-    	updateLabel(mLastTime);
-		updateImage(mLastTime,mMax);  	
+    	updateLabel(mTime);
+		
+    	TimerDrawing i = (TimerDrawing)findViewById(R.id.imageView);
+    	i.updateImage(mTime,mLastTime);  	
     }
     /**
      * Updates the text label with the given time
@@ -203,61 +181,17 @@ public class TimerActivity extends Activity {
 		label.setTextSize(size);
 		label.setText(str);
 	}
-	/**
-	 * Updates the image to be in sync with the current time
-	 * @param time in milliseconds
-	 * @param max the original time set in milliseconds
-	 */
-	public void updateImage(int time,int max)
-	{
-		// buffer 
-		int topBuffer = 13;
-		int bottomBuffer = 15;
-		
-		ImageView i = (ImageView)findViewById(R.id.imageView);	
-		
-		// Load the bitmap
-		Bitmap cup  = BitmapFactory.decodeResource(getResources(), R.drawable.cup);
-		int w = cup.getWidth();
-		int h = cup.getHeight();
-		
-		Bitmap bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.RGB_565);
-		
-		Paint paint = new Paint();
-		
-		float p = (max == 0) ? 0 : (time/(float)max);
-		
-		// Define the drawing rects
-		RectF teaRect = new RectF(0,(h-topBuffer)*p+bottomBuffer,w,h+bottomBuffer);
-		RectF fillRect = new RectF(0,0,w,h);
-		
-		Canvas canvas = new Canvas(bitmap);
-		
-		// Fill the entire bg the correct color
-		canvas.drawColor(Color.rgb(24,24,24));
-		
-		// Unused part of the cup
-		paint.setColor(R.color.tea_bg);
-		canvas.drawRect(fillRect, paint);
-		
-		// The filled part of the cup
-		paint.setColor(getResources().getColor(R.color.tea_fill));
-		canvas.drawRect(teaRect,paint);
-		canvas.drawBitmap(cup, 0, 0, paint);
-		
-		// Switch out the bitmap
-		i.setImageBitmap(bitmap);
-	
-		
-	}
+
 	
 	/** {@inheritDoc} */
 	@Override
 	protected Dialog onCreateDialog(int id) {
     	switch (id) {
     	case 0:
+    		int [] timeVec = TimerService.time2Mhs(mLastTime);
+    		
         	return new AbsTimePickerDialog(this,
-                mTimeSetListener, 0, 0);
+                mTimeSetListener, timeVec[0], timeVec[1]);
     	}
     	return null;
 	}
@@ -287,28 +221,65 @@ public class TimerActivity extends Activity {
 	
 	private void onTimerStop()
 	{
+		// Stop our timer service
 		enterState(State.STOPPED);		
 		Intent svc = new Intent(this, TimerService.class);
-		unbindService(mConnection);
 		stopService(svc);
+		
+		// Stop our local timer
+		mTimer.cancel();
 	}
 
-	private void onTimerStart(int time)
+	private void onTimerStart(int time,boolean service)
 	{
 		Log.v(DEBUG_STR,"Starting the timer...");
 		
+		// Star external service
 		enterState(State.RUNNING);
-		Intent svc = new Intent(this, TimerService.class);
-	    svc.putExtra("Time",time);
-		startService(svc);		
-		bindService(svc, mConnection,Context.BIND_AUTO_CREATE);
 		
+		if(service){
+			Intent svc = new Intent(this, TimerService.class);
+		    svc.putExtra("Time",time);
+			startService(svc);
+		}
+		
+		// Internal thread to properly update the GUI
+		mTimer = new Timer();	
+		mTime = time;
+		mTimer.scheduleAtFixedRate( new TimerTask() {
+	        		public void run() {
+	          			onTimerTic();
+	        		}
+	      		},
+	      		0,
+	      		TimerService.UPDATE_INTERVAL);
+	}
+
+	/** Called whenever the internal timer is updated */
+	protected void onTimerTic() 
+	{
+		mTime -= TimerService.UPDATE_INTERVAL;
+		
+		if(mHandler != null){
+			Message msg = new Message();
+			msg.arg1 = mTime;			
+			mHandler.sendMessage(msg);
+		}
 	}
 
 	private void clearTime()
 	{
-		updateLabel(0);
-		updateImage(0, 0);
+		mTime = 0;
+		onUpdateTime();
 	}
 
+	public void onClick(View v) {
+		Button b = (Button)v;
+		if(b.getText() == getText(R.string.Stop)){	
+			onTimerStop();	
+		}else{
+			showDialog(0);			
+	
+		}
+	}
 }
