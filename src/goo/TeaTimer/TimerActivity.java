@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -39,7 +41,9 @@ import android.widget.Toast;
 public class TimerActivity extends Activity implements OnClickListener{
 		
 	/** debug string */
-	private final String DEBUG_STR = "TimerActivity";
+	private final String DEBUG_STR = getClass().getSimpleName();
+	
+	private final int TIMER_TIC = 250;
 	
 	private enum State{ RUNNING, STOPPED };
 	
@@ -101,6 +105,24 @@ public class TimerActivity extends Activity implements OnClickListener{
         clearTime();
     }
     
+    /** { @inheritDoc} */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+  
+    	MenuItem item = menu.add(0, 0, 0, "Preferences");
+    	item.setIcon(android.R.drawable.ic_menu_preferences);  
+    	return super.onCreateOptionsMenu(menu);
+    }
+    
+    /** when menu button option selected */
+	@Override public boolean onOptionsItemSelected(MenuItem item) {
+	  
+		// Only one item
+		startActivity(new Intent(this, TimerPrefActivity.class));
+		
+		return true;
+	}
+    
     @Override 
     public void onPause()
     {
@@ -108,11 +130,10 @@ public class TimerActivity extends Activity implements OnClickListener{
     	Log.v(DEBUG_STR,"Timer Activity is pausing...");
     	
     	// Save our settings
-    	SharedPreferences settings = getPreferences(0);
+    	SharedPreferences settings = getSharedPreferences("GooTimer",0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("LastTime", mLastTime);
- 
-        
+     
         // Cancel our thread
     	if(mTimer != null){
     		mTimer.cancel();
@@ -134,7 +155,7 @@ public class TimerActivity extends Activity implements OnClickListener{
     	
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already beed loaded?
-    	SharedPreferences settings = getPreferences(0);
+    	SharedPreferences settings = getSharedPreferences("GooTimer",0);
         mLastTime = settings.getInt("LastTime",0);
         
         long timeStamp = settings.getLong("TimeStamp", -1);
@@ -152,6 +173,7 @@ public class TimerActivity extends Activity implements OnClickListener{
         		onTimerStart(delta,false);
         	}else{
         		Log.v(DEBUG_STR,"Timer has long since expired.");
+        		clearTime();
         	}
         }
         
@@ -252,13 +274,13 @@ public class TimerActivity extends Activity implements OnClickListener{
 	        		}
 	      		},
 	      		0,
-	      		TimerService.UPDATE_INTERVAL);
+	      		TIMER_TIC);
 	}
 
 	/** Called whenever the internal timer is updated */
 	protected void onTimerTic() 
 	{
-		mTime -= TimerService.UPDATE_INTERVAL;
+		mTime -= TIMER_TIC;
 		
 		if(mHandler != null){
 			Message msg = new Message();

@@ -7,6 +7,14 @@
     <stroke android:width="2dp" android:color="#FF666666" /> 
     <padding android:left="7dp" android:top="7dp" 
             android:right="7dp" android:bottom="7dp" /> 
-    <corners android:radius="2dp" /> 
-    <solid android:color="#00FFFFFF"/>
+    <corners android:radius="4dp" /> 
+    
+     <gradient
+     			android:height="100px"
+     			android:dither="true"
+     			android:thickness="5px"
+     			android:antialias="true"
+                android:startColor="#FF333333"
+                android:endColor="#00FFFFFF"
+                android:angle="270"/>
 </shape> 

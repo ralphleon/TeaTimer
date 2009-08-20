@@ -18,12 +18,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
+import android.os.Vibrator;
 import android.util.Log;
 
 /**
@@ -37,7 +37,10 @@ public class TimerService extends Service
 	
 	public static final int UPDATE_INTERVAL = 1000;
  	private static final int HELLO_ID = 1;
- 
+ 	
+	/** Vibrate time */
+	private int mVibrateTime = 500;
+	
  	NotificationManager mNM;
  	
 	/** Timer object used for stopwatch logic**/
@@ -110,6 +113,11 @@ public class TimerService extends Service
 	
 	public void showFinishedNotification()
 	{
+		Log.v(DEBUG,"Showing Notification");
+	
+	 	SharedPreferences settings = getSharedPreferences("GooTimer",0);
+        boolean play = settings.getBoolean("PlaySound",true);
+        
 		CharSequence text = getText(R.string.Notification);
 		CharSequence textLatest = "Timer for " + time2humanStr(mMax);
 		
@@ -117,10 +125,20 @@ public class TimerService extends Service
         		text,
                 System.currentTimeMillis());
 
-		// Play a sound!
-		Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
-      	notification.sound = uri;
-      	
+        notification.defaults = Notification.DEFAULT_VIBRATE;
+        
+        // Have a light
+        notification.ledARGB = 0xff00ff00;
+        notification.ledOnMS = 300;
+        notification.ledOffMS = 1000;
+        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+        
+        // Play a sound!
+        if(play){
+			Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
+	      	notification.sound = uri;
+        }
+        
       	Intent intent = new Intent(this,TimerActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, 0);
 
