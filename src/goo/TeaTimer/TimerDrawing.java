@@ -13,6 +13,9 @@ import android.widget.ImageView;
 class TimerDrawing extends ImageView
 {
 	Context mContext = null;
+	// buffer 
+	private final int TOP_BUFFER = 5;
+	private final int BOTTOM_BUFFER = 5;
 	
 	public TimerDrawing(Context context, AttributeSet set)
 	{
@@ -27,11 +30,7 @@ class TimerDrawing extends ImageView
 	 * @param max the original time set in milliseconds
 	 */
 	public void updateImage(int time,int max)
-	{
-		// buffer 
-		int topBuffer = 13;
-		int bottomBuffer = 15;
-		
+	{	
 		ImageView i = this;
 		
 		// Load the bitmap
@@ -46,7 +45,7 @@ class TimerDrawing extends ImageView
 		float p = (max == 0) ? 0 : (time/(float)max);
 		
 		// Define the drawing rects
-		RectF teaRect = new RectF(0,(h-topBuffer)*p+bottomBuffer,w,h+bottomBuffer);
+		RectF teaRect = new RectF(0,(h-TOP_BUFFER)*p+BOTTOM_BUFFER,w,h+BOTTOM_BUFFER);
 		RectF fillRect = new RectF(0,0,w,h);
 		
 		Canvas canvas = new Canvas(bitmap);

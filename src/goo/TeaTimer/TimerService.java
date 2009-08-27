@@ -18,12 +18,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Vibrator;
 import android.util.Log;
 
 /**
@@ -31,7 +30,7 @@ import android.util.Log;
  * @author Ralph Gootee (rgootee@gmail.com)
  *
  */
-public class TimerService extends Service
+public class TimerService extends Service implements PendingIntent.OnFinished
 {
 	private final String DEBUG = getClass().getSimpleName();
 	
@@ -140,7 +139,7 @@ public class TimerService extends Service
         }
         
       	Intent intent = new Intent(this,TimerActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, Intent.FLAG_ACTIVITY_NEW_TASK);
 
         notification.setLatestEventInfo(this, text,
                        textLatest, contentIntent);
@@ -212,5 +211,11 @@ public class TimerService extends Service
    		if(minutes != 1) r+= "s";
 		
    		return r;
+	}
+
+	public void onSendFinished(PendingIntent pendingIntent, Intent intent,
+			int resultCode, String resultData, Bundle resultExtras) {
+		// TODO Auto-generated method stub
+		Log.v(DEBUG,"PENDING FINISHED");
 	}
 }

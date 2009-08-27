@@ -101,8 +101,16 @@ public class TimerActivity extends Activity implements OnClickListener{
 
 		Button startButton = (Button)findViewById(R.id.stop);
         startButton.setOnClickListener(this);
-        
+       
         clearTime();
+    }
+    
+    @Override 
+    public void onNewIntent(Intent intent)
+    {
+    	super.onNewIntent(intent);
+    	
+    	Log.v(DEBUG_STR,"On new intent called!");
     }
     
     /** { @inheritDoc} */
