@@ -10,17 +10,16 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-class TimerDrawing extends ImageView
+class TrashCupAnimation implements TimerAnimation.TimerDrawing
 {
 	Context mContext = null;
+	
 	// buffer 
 	private final int TOP_BUFFER = 3;
 	private final int BOTTOM_BUFFER = 5;
 	
-	public TimerDrawing(Context context, AttributeSet set)
+	public TrashCupAnimation(Context context)
 	{
-		super(context,set);
-	
 		mContext = context;
 	}
 	
@@ -29,12 +28,10 @@ class TimerDrawing extends ImageView
 	 * @param time in milliseconds
 	 * @param max the original time set in milliseconds
 	 */
-	public void updateImage(int time,int max)
+	public Bitmap updateImage(int time,int max)
 	{	
-		ImageView i = this;
-		
 		// Load the bitmap
-		Bitmap cup  = BitmapFactory.decodeResource(getResources(), R.drawable.cup);
+		Bitmap cup  = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.cup);
 		int w = cup.getWidth();
 		int h = cup.getHeight();
 		
@@ -58,11 +55,11 @@ class TimerDrawing extends ImageView
 		canvas.drawRect(fillRect, paint);
 		
 		// The filled part of the cup
-		paint.setColor(getResources().getColor(R.color.tea_fill));
+		paint.setColor(mContext.getResources().getColor(R.color.tea_fill));
 		canvas.drawRect(teaRect,paint);
 		canvas.drawBitmap(cup, 0, 0, paint);
 		
 		// Switch out the bitmap
-		i.setImageBitmap(bitmap);	
+		return bitmap;	
 	}
 }

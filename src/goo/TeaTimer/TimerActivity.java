@@ -37,6 +37,7 @@ import android.widget.Toast;
 /**
  * The main activity which shows the timer and allows the user to set the time
  * @author Ralph Gootee (rgootee@gmail.com)
+ * @param <TimerAnimation>
  */
 public class TimerActivity extends Activity implements OnClickListener{
 		
@@ -183,11 +184,12 @@ public class TimerActivity extends Activity implements OnClickListener{
     /**
      * Updates the time 
      */
-    public void onUpdateTime()
+    @SuppressWarnings("unchecked")
+	public void onUpdateTime()
     {
     	updateLabel(mTime);
 		
-    	TimerDrawing i = (TimerDrawing)findViewById(R.id.imageView);
+    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
     	i.updateImage(mTime,mLastTime);  	
     }
     /**
