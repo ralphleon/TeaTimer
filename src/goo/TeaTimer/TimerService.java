@@ -30,7 +30,7 @@ import android.util.Log;
  * @author Ralph Gootee (rgootee@gmail.com)
  *
  */
-public class TimerService extends Service implements PendingIntent.OnFinished
+public class TimerService extends Service
 {
 	private final String DEBUG = getClass().getSimpleName();
 	
@@ -130,7 +130,7 @@ public class TimerService extends Service implements PendingIntent.OnFinished
         notification.ledARGB = 0xff00ff00;
         notification.ledOnMS = 300;
         notification.ledOffMS = 1000;
-        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+        notification.flags |= Notification.FLAG_SHOW_LIGHTS |  Notification.FLAG_AUTO_CANCEL;
         
         // Play a sound!
         if(play){
@@ -211,11 +211,5 @@ public class TimerService extends Service implements PendingIntent.OnFinished
    		if(minutes != 1) r+= "s";
 		
    		return r;
-	}
-
-	public void onSendFinished(PendingIntent pendingIntent, Intent intent,
-			int resultCode, String resultData, Bundle resultExtras) {
-		// TODO Auto-generated method stub
-		Log.v(DEBUG,"PENDING FINISHED");
 	}
 }

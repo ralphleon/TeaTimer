@@ -94,7 +94,7 @@ public class TimerActivity extends Activity implements OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-    	Log.v(DEBUG_STR,"Activity has been created...");
+    	//Log.v(DEBUG_STR,"Activity has been created...");
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -105,20 +105,12 @@ public class TimerActivity extends Activity implements OnClickListener{
         clearTime();
     }
     
-    @Override 
-    public void onNewIntent(Intent intent)
-    {
-    	super.onNewIntent(intent);
-    	
-    	Log.v(DEBUG_STR,"On new intent called!");
-    }
-    
     /** { @inheritDoc} */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
   
-    	MenuItem item = menu.add(0, 0, 0, "Preferences");
-    	item.setIcon(android.R.drawable.ic_menu_preferences);  
+    	//MenuItem item = menu.add(0, 0, 0, "Preferences");
+    	//item.setIcon(android.R.drawable.ic_menu_preferences);  
     	return super.onCreateOptionsMenu(menu);
     }
     
@@ -135,7 +127,7 @@ public class TimerActivity extends Activity implements OnClickListener{
     public void onPause()
     {
     	super.onPause();
-    	Log.v(DEBUG_STR,"Timer Activity is pausing...");
+    	//Log.v(DEBUG_STR,"Timer Activity is pausing...");
     	
     	// Save our settings
     	SharedPreferences settings = getSharedPreferences("GooTimer",0);
@@ -159,7 +151,7 @@ public class TimerActivity extends Activity implements OnClickListener{
     public void onResume()
     {
     	super.onResume();
-    	Log.v(DEBUG_STR,"Timer is resuming...");
+    	//Log.v(DEBUG_STR,"Timer is resuming...");
     	
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already beed loaded?
@@ -169,7 +161,7 @@ public class TimerActivity extends Activity implements OnClickListener{
         long timeStamp = settings.getLong("TimeStamp", -1);
         
         if(timeStamp != -1){
-        	Log.v(DEBUG_STR,"Timer was running, seeing if we need to execute.");
+        	//Log.v(DEBUG_STR,"Timer was running, seeing if we need to execute.");
         	
         	Date now = new Date();
         	Date then = new Date(timeStamp);
@@ -177,15 +169,15 @@ public class TimerActivity extends Activity implements OnClickListener{
         	if(then.after(now))
         	{
         		int delta = (int)(then.getTime() - now.getTime());		
-        		Log.v(DEBUG_STR,"Timer should still be running, has " +  TimerService.time2humanStr(delta));
+        		//Log.v(DEBUG_STR,"Timer should still be running, has " +  TimerService.time2humanStr(delta));
         		onTimerStart(delta,false);
         	}else{
-        		Log.v(DEBUG_STR,"Timer has long since expired.");
+        		//Log.v(DEBUG_STR,"Timer has long since expired.");
         		clearTime();
         	}
         }
         
-        Log.v(DEBUG_STR,"Preference loaded, mLastTime=" + mLastTime);
+        //Log.v(DEBUG_STR,"Preference loaded, mLastTime=" + mLastTime);
     }
     
     /**

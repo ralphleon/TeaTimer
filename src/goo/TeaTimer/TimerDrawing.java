@@ -14,7 +14,7 @@ class TimerDrawing extends ImageView
 {
 	Context mContext = null;
 	// buffer 
-	private final int TOP_BUFFER = 5;
+	private final int TOP_BUFFER = 3;
 	private final int BOTTOM_BUFFER = 5;
 	
 	public TimerDrawing(Context context, AttributeSet set)
