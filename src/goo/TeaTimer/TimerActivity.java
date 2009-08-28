@@ -128,13 +128,15 @@ public class TimerActivity extends Activity implements OnClickListener{
     public void onPause()
     {
     	super.onPause();
-    	//Log.v(DEBUG_STR,"Timer Activity is pausing...");
+    	
+    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
     	
     	// Save our settings
     	SharedPreferences settings = getSharedPreferences("GooTimer",0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("LastTime", mLastTime);
-     
+        editor.putInt("DrawingIndex",i.getIndex());
+        
         // Cancel our thread
     	if(mTimer != null){
     		mTimer.cancel();
@@ -151,6 +153,8 @@ public class TimerActivity extends Activity implements OnClickListener{
     @Override 
     public void onResume()
     {
+    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
+    	
     	super.onResume();
     	//Log.v(DEBUG_STR,"Timer is resuming...");
     	
@@ -158,6 +162,8 @@ public class TimerActivity extends Activity implements OnClickListener{
     	// assumes the data has already beed loaded?
     	SharedPreferences settings = getSharedPreferences("GooTimer",0);
         mLastTime = settings.getInt("LastTime",0);
+        
+        i.setIndex(settings.getInt("DrawingIndex",0));
         
         long timeStamp = settings.getLong("TimeStamp", -1);
         
@@ -299,11 +305,14 @@ public class TimerActivity extends Activity implements OnClickListener{
 
 	public void onClick(View v) {
 		Button b = (Button)v;
-		if(b.getText() == getText(R.string.Stop)){	
-			onTimerStop();	
-		}else{
-			showDialog(0);			
-	
+		
+		if(b != null){
+			if(b.getText() == getText(R.string.Stop)){	
+				onTimerStop();	
+			}else{
+				showDialog(0);
+			}
 		}
+		
 	}
 }

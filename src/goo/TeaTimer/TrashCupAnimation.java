@@ -1,26 +1,24 @@
 package goo.TeaTimer;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.AttributeSet;
-import android.widget.ImageView;
 
 class TrashCupAnimation implements TimerAnimation.TimerDrawing
 {
-	Context mContext = null;
+	Resources mResources = null;
 	
 	// buffer 
 	private final int TOP_BUFFER = 3;
 	private final int BOTTOM_BUFFER = 5;
 	
-	public TrashCupAnimation(Context context)
+	public TrashCupAnimation(Resources r)
 	{
-		mContext = context;
+		mResources = r;
 	}
 	
 	/**
@@ -30,8 +28,9 @@ class TrashCupAnimation implements TimerAnimation.TimerDrawing
 	 */
 	public Bitmap updateImage(int time,int max)
 	{	
+		
 		// Load the bitmap
-		Bitmap cup  = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.cup);
+		Bitmap cup  = BitmapFactory.decodeResource(mResources, R.drawable.cup);
 		int w = cup.getWidth();
 		int h = cup.getHeight();
 		
@@ -55,7 +54,7 @@ class TrashCupAnimation implements TimerAnimation.TimerDrawing
 		canvas.drawRect(fillRect, paint);
 		
 		// The filled part of the cup
-		paint.setColor(mContext.getResources().getColor(R.color.tea_fill));
+		paint.setColor(mResources.getColor(R.color.tea_fill));
 		canvas.drawRect(teaRect,paint);
 		canvas.drawBitmap(cup, 0, 0, paint);
 		
