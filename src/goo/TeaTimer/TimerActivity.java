@@ -44,7 +44,7 @@ public class TimerActivity extends Activity implements OnClickListener{
 	/** debug string */
 	private final String DEBUG_STR = getClass().getSimpleName();
 	
-	private final int TIMER_TIC = 250;
+	private final int TIMER_TIC = 500;
 	
 	private enum State{ RUNNING, STOPPED };
 	

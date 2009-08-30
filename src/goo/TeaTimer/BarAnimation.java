@@ -11,7 +11,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.Log;
 
-class CircleAnimation implements TimerAnimation.TimerDrawing
+class BarAnimation implements TimerAnimation.TimerDrawing
 {
 	Context mContext = null;
 	// buffer 
@@ -28,7 +28,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	/** Rects for the arcs */
 	private RectF mArcRect,mSecondRect,mMsRect;
 	
-	public CircleAnimation(Resources resources)
+	public BarAnimation(Resources resources)
 	{
 		mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mCirclePaint.setColor(Color.rgb(0,0,0));
@@ -68,7 +68,6 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		mMsRect = new RectF(w2-mMsRadius, h2-mMsRadius, w2+mMsRadius, h2+mMsRadius);	
 		mSecondRect = new RectF(w2-mSecondRadius, h2-mSecondRadius, w2+mSecondRadius, h2+mSecondRadius);
 		mArcRect = new RectF(w2-mRadius, h2-mRadius, w2+mRadius, h2+mRadius);
-		
 	}
 	
 	/**

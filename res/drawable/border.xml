@@ -7,7 +7,7 @@
     <stroke android:width="2dp" android:color="#FF666666" /> 
     <padding android:left="7dp" android:top="7dp" 
             android:right="7dp" android:bottom="7dp" /> 
-    <corners android:radius="4dp" /> 
+    <corners android:radius="8dp" /> 
     
      <gradient
      			android:height="100px"

@@ -21,7 +21,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -37,9 +36,6 @@ public class TimerService extends Service
 	public static final int UPDATE_INTERVAL = 1000;
  	private static final int HELLO_ID = 1;
  	
-	/** Vibrate time */
-	private int mVibrateTime = 500;
-	
  	NotificationManager mNM;
  	
 	/** Timer object used for stopwatch logic**/
@@ -178,6 +174,7 @@ public class TimerService extends Service
 	
 	static public int [] time2Mhs(int time)
 	{
+		int ms = time % 1000;
 		int seconds = (int) (time / 1000);
 		int minutes = seconds / 60;
 		int hour = minutes / 60;
@@ -185,11 +182,11 @@ public class TimerService extends Service
 		minutes = minutes % 60;
    		seconds = seconds % 60;
    		
-		int [] timeVec = new int[3];
+		int [] timeVec = new int[4];
 		timeVec[0] = hour;
 		timeVec[1] = minutes;
 		timeVec[2] = seconds;
-	
+		timeVec[3] = ms;
 		return timeVec;
 	}
 	
