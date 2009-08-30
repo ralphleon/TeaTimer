@@ -19,7 +19,7 @@
  */
 package com.goo.TeaTimer.widget;
 
-import goo.TeaTimer.R;
+import com.goo.TeaTimer.R;
 import android.content.Context;
 import android.os.Handler;
 import android.text.InputFilter;
@@ -155,6 +155,7 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
         if (!isEnabled()) {
             setEnabled(false);
         }
+        
     }
 
     @Override
@@ -163,6 +164,7 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
         mIncrementButton.setEnabled(enabled);
         mDecrementButton.setEnabled(enabled);
         mText.setEnabled(enabled);
+        mIncrementButton.requestFocus();
     }
 
     public void setOnChangeListener(OnChangedListener listener) {
@@ -212,6 +214,7 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
     public void setCurrent(int current) {
         mCurrent = current;
         updateView();
+        mIncrementButton.requestFocus();
     }
 
     /**

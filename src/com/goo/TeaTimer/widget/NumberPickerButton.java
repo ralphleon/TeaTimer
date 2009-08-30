@@ -19,7 +19,7 @@
  */
 package com.goo.TeaTimer.widget;
 
-import goo.TeaTimer.R;
+import com.goo.TeaTimer.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;

@@ -2,7 +2,7 @@ package com.goo.TeaTimer.Animation;
 
 import com.goo.TeaTimer.TimerService;
 
-import goo.TeaTimer.R;
+import com.goo.TeaTimer.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -12,7 +12,6 @@ import android.graphics.Paint;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.util.Log;
 
 class CircleAnimation implements TimerAnimation.TimerDrawing
 {
@@ -20,7 +19,6 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	// buffer 
 	private final int WIDTH = 180;
 	private final int HEIGHT = 180;
-	private final int STROKE = 0;
 	
 	private final int START_ANGLE = 270;
 	

@@ -11,7 +11,7 @@
 
 package com.goo.TeaTimer;
 
-import goo.TeaTimer.R;
+import com.goo.TeaTimer.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

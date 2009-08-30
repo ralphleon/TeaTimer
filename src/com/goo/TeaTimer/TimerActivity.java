@@ -11,18 +11,21 @@
 
 package com.goo.TeaTimer;
 
-import goo.TeaTimer.R;
+import com.goo.TeaTimer.R;
 
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.goo.TeaTimer.Animation.TimerAnimation;
-import com.goo.TeaTimer.widget.AbsTimePickerDialog;
+import com.goo.TeaTimer.widget.NNumberPickerDialog;
+import com.goo.TeaTimer.widget.NumberPicker;
+import com.goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
+
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,7 +39,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 /**
@@ -44,7 +46,7 @@ import android.widget.Toast;
  * @author Ralph Gootee (rgootee@gmail.com)
  * @param <TimerAnimation>
  */
-public class TimerActivity extends Activity implements OnClickListener{
+public class TimerActivity extends Activity implements OnClickListener,OnNNumberPickedListener{
 		
 	/** debug string */
 	private final String DEBUG_STR = getClass().getSimpleName();
@@ -64,14 +66,14 @@ public class TimerActivity extends Activity implements OnClickListener{
 	private Timer mTimer = null;
 	
 	/** the call-back received when the user "sets" the time in the dialog */
-	private TimePickerDialog.OnTimeSetListener mTimeSetListener =
-    	new TimePickerDialog.OnTimeSetListener() {
-        	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        		mLastTime = hourOfDay*60*60*1000 + minute*60*1000;
-        		
-				onTimerStart(mLastTime,true);
-			}
-    };
+//	private TimePickerDialog.OnTimeSetListener mTimeSetListener =
+//    	new TimePickerDialog.OnTimeSetListener() {
+//        	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//        		mLastTime = hourOfDay*60*60*1000 + minute*60*1000;
+//        		
+//				onTimerStart(mLastTime,true);
+//			}
+//    };
 
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
@@ -220,15 +222,40 @@ public class TimerActivity extends Activity implements OnClickListener{
 	
 	/** {@inheritDoc} */
 	@Override
-	protected Dialog onCreateDialog(int id) {
-    	switch (id) {
+	protected Dialog onCreateDialog(int id) 
+	{
+		// Only 1 dialog :)
+		switch (id) {
     	case 0:
-    		int [] timeVec = TimerService.time2Mhs(mLastTime);
     		
-        	return new AbsTimePickerDialog(this,
-                mTimeSetListener, timeVec[0], timeVec[1]);
+    		int [] timeVec = TimerService.time2Mhs(mLastTime);
+    		int [] init = {timeVec[0],timeVec[1],timeVec[2]};
+    		int [] inc = {1,1,1};
+    		int [] start = {0,0,0};
+    		int [] end = {23,59,59};
+    		String [] sep = {":",".",""};
+    		NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
+    												NumberPicker.TWO_DIGIT_FORMATTER,
+    												NumberPicker.TWO_DIGIT_FORMATTER};
+    		
+    		return new NNumberPickerDialog(	this, this, "Hour:Min.Sec", 
+    										init, inc, start, end, sep,format);
     	}
     	return null;
+	}
+	
+	/** 
+	 * Callback for the number picker dialog
+	 */
+	public void onNumbersPicked(int[] number)
+	{
+		int hour = number[0];
+		int min = number[1];
+		int sec = number[2];
+		
+		mLastTime = hour*60*60*1000 + min*60*1000 + sec*1000;
+		
+		onTimerStart(mLastTime,true);
 	}
 
 	/** 

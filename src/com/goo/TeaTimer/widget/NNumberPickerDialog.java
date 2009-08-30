@@ -20,7 +20,7 @@ package com.goo.TeaTimer.widget;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import goo.TeaTimer.R;
+import com.goo.TeaTimer.R;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
      */
     public NNumberPickerDialog(Context context, OnNNumberPickedListener callBack,
             String title, int[] initialValue, int[] incrementBy, int[] start,
-            int[] end, String[] separators) {
+            int[] end, String[] separators,NumberPicker.Formatter [] format) {
         super(context);
         mCallback = callBack;
 
@@ -81,6 +81,7 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
                 LayoutParams.FILL_PARENT);
         for(int i = 0; i < incrementBy.length; i++) {
             NumberPicker np = new NumberPicker(context, null);
+            np.setFormatter(format[i]);
             np.setIncrementBy(incrementBy[i]);
             np.setLayoutParams(npLayout);
             np.setRange(start[i], end[i]);
