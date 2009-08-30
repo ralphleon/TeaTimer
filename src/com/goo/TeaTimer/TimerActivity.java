@@ -17,6 +17,9 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.goo.TeaTimer.Animation.TimerAnimation;
+import com.goo.TeaTimer.widget.AbsTimePickerDialog;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
