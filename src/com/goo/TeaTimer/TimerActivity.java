@@ -64,16 +64,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	
 	/** increment for the timer */
 	private Timer mTimer = null;
-	
-	/** the call-back received when the user "sets" the time in the dialog */
-//	private TimePickerDialog.OnTimeSetListener mTimeSetListener =
-//    	new TimePickerDialog.OnTimeSetListener() {
-//        	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//        		mLastTime = hourOfDay*60*60*1000 + minute*60*1000;
-//        		
-//				onTimerStart(mLastTime,true);
-//			}
-//    };
 
 	/** Handler for the message from the timer service */
 	private Handler mHandler = new Handler() {
@@ -163,7 +153,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
     	
     	super.onResume();
-    	//Log.v(DEBUG_STR,"Timer is resuming...");
     	
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already beed loaded?
@@ -175,29 +164,26 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         long timeStamp = settings.getLong("TimeStamp", -1);
         
         if(timeStamp != -1){
-        	//Log.v(DEBUG_STR,"Timer was running, seeing if we need to execute.");
         	
         	Date now = new Date();
         	Date then = new Date(timeStamp);
         	
-        	if(then.after(now))
-        	{
+        	// We stil have a timer running!
+        	if(then.after(now)){
         		int delta = (int)(then.getTime() - now.getTime());		
-        		//Log.v(DEBUG_STR,"Timer should still be running, has " +  TimerService.time2humanStr(delta));
         		onTimerStart(delta,false);
+        	
+        	// All finished
         	}else{
-        		//Log.v(DEBUG_STR,"Timer has long since expired.");
         		clearTime();
+        		enterState(State.STOPPED);
         	}
         }
-        
-        //Log.v(DEBUG_STR,"Preference loaded, mLastTime=" + mLastTime);
     }
     
     /**
      * Updates the time 
      */
-    @SuppressWarnings("unchecked")
 	public void onUpdateTime()
     {
     	updateLabel(mTime);
@@ -205,6 +191,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
     	i.updateImage(mTime,mLastTime);  	
     }
+	
     /**
      * Updates the text label with the given time
      * @param time in milliseconds

@@ -19,10 +19,10 @@
  */
 package com.goo.TeaTimer.widget;
 
-import com.goo.TeaTimer.R;
 import android.content.Context;
 import android.os.Handler;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.Spanned;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
@@ -35,6 +35,8 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.goo.TeaTimer.R;
 
 public class NumberPicker extends LinearLayout implements OnClickListener,
         OnFocusChangeListener, OnLongClickListener {
@@ -134,6 +136,8 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
         mText = (TextView) findViewById(R.id.timepicker_input);
         mText.setOnFocusChangeListener(this);
         mText.setFilters(new InputFilter[] { mInputFilter });
+        mText.setInputType(InputType.TYPE_NULL); 
+        mText.setFocusable(false);
 
         mSlideUpOutAnimation = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0,
@@ -155,7 +159,6 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
         if (!isEnabled()) {
             setEnabled(false);
         }
-        
     }
 
     @Override
@@ -164,7 +167,6 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
         mIncrementButton.setEnabled(enabled);
         mDecrementButton.setEnabled(enabled);
         mText.setEnabled(enabled);
-        mIncrementButton.requestFocus();
     }
 
     public void setOnChangeListener(OnChangedListener listener) {
@@ -214,7 +216,6 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
     public void setCurrent(int current) {
         mCurrent = current;
         updateView();
-        mIncrementButton.requestFocus();
     }
 
     /**

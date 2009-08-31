@@ -1,76 +1,40 @@
 package com.goo.TeaTimer.Animation;
 
-import com.goo.TeaTimer.TimerService;
-
-import com.goo.TeaTimer.R;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RadialGradient;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.util.Log;
+
+import com.goo.TeaTimer.R;
 
 class BarAnimation implements TimerAnimation.TimerDrawing
 {
-	Context mContext = null;
-	// buffer 
-	private final int WIDTH = 180;
-	private final int HEIGHT = 180;
-	private final int STROKE = 0;
+	private final int WIDTH = 250, HEIGHT = 75; 
 	
-	private final int START_ANGLE = 270;
+	private final int STROKE_WIDTH = 10;
+	private final int ROUND = 5;
+	private final int BUFFER = 10;
 	
-	private int mRadius = 75,mInnerRadius=30,mSecondRadius=90,mMsRadius=100;
-
-	private Paint mCirclePaint,mInnerPaint,mArcPaint,mSecondPaint,mMsPaint;
-
-	/** Rects for the arcs */
-	private RectF mArcRect,mSecondRect,mMsRect;
+	private Paint mEdgePaint,mInnerPaint;
+	
+	private RectF mEdgeRect,mInnerRect;
 	
 	public BarAnimation(Resources resources)
 	{
-		mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCirclePaint.setColor(Color.rgb(0,0,0));
-	
+		mEdgePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mEdgePaint.setColor(resources.getColor(R.color.tea_fill));
+		mEdgePaint.setStyle(Paint.Style.STROKE);
+		mEdgePaint.setStrokeWidth(STROKE_WIDTH);
+		//mEdgePaint.setStrokeCap(Paint.Cap.ROUND);
+		//mEdgePaint.setStrokeJoin(Paint.Join.ROUND);
+		
 		mInnerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mInnerPaint.setColor(Color.rgb(24,24,24));
+		mInnerPaint.setColor(resources.getColor(R.color.tea_fill));
 		
-		mSecondPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mSecondPaint.setColor(Color.rgb(60,60,60));
-		
-		mMsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mMsPaint.setColor(Color.rgb(90,90,90));
-		
-		int end = resources.getColor(R.color.tea_fill);
-		
-		int offset = 50;
-		
-		int r = Color.red(end) - offset;
-		int g = Color.green(end) - offset;
-		int b = Color.blue(end) - offset;
-		
-		int start = Color.rgb(r, g, b);
-		
-		RadialGradient gradient = new RadialGradient(	WIDTH/2.0f, HEIGHT/2.0f, mRadius, 
-														start, 										
-														end, 
-														Shader.TileMode.CLAMP);
-		
-		mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mArcPaint.setStyle(Paint.Style.FILL);
-		mArcPaint.setShader(gradient);
-		
-		float w2 = WIDTH/2.0f;
-		float h2 = HEIGHT/2.0f;
-		
-		// Create the rects
-		mMsRect = new RectF(w2-mMsRadius, h2-mMsRadius, w2+mMsRadius, h2+mMsRadius);	
-		mSecondRect = new RectF(w2-mSecondRadius, h2-mSecondRadius, w2+mSecondRadius, h2+mSecondRadius);
-		mArcRect = new RectF(w2-mRadius, h2-mRadius, w2+mRadius, h2+mRadius);
+		mEdgeRect = new RectF(0,0,WIDTH,HEIGHT);
+		mInnerRect = new RectF(BUFFER,BUFFER,WIDTH-BUFFER,HEIGHT-BUFFER);
 	}
 	
 	/**
@@ -80,35 +44,22 @@ class BarAnimation implements TimerAnimation.TimerDrawing
 	 */
 	public Bitmap updateImage(int time,int max)
 	{	
+		float p = (max == 0) ? 1 : (time/(float)max);
+		Log.v("Tea","p " + p + " time " + time + " max " + max);
 		Bitmap bitmap = Bitmap.createBitmap(WIDTH,HEIGHT,Bitmap.Config.ARGB_8888);
-		
-		float p = (max == 0) ? 0 : (time/(float)max);
-		
-		int [] timeVec = TimerService.time2Mhs(time);
-		
-		float pSecond = (max == 0) ? 1 : (float)((timeVec[2]/60.0)); 
-		float pMs = (float)((timeVec[3]/1000.00));
-		
-		float w2 = WIDTH/2.0f;
-		float h2 = HEIGHT/2.0f;
-		
 		Canvas canvas = new Canvas(bitmap);
 		
-		// Ms Arc
-		//canvas.drawArc(mMsRect, pMs*360, SECOND_SWEEP, true, mMsPaint);
-	
-		//Second arc
-		canvas.drawCircle(w2,h2,mSecondRadius,mMsPaint);
-		canvas.drawArc(mSecondRect, START_ANGLE, pSecond*360, true, mSecondPaint);
+		// Draw the border
+		canvas.drawRoundRect(mEdgeRect, ROUND, ROUND, mEdgePaint);
 		
-		// Background fill
-		canvas.drawCircle(w2,h2,mRadius,mCirclePaint);
-				
-		// Main arc
-		canvas.drawArc(mArcRect,START_ANGLE,360*(1-p),true,mArcPaint);
+		// Draw the progress
+		mInnerRect.set(	BUFFER+.5f*STROKE_WIDTH/2.0f, BUFFER+.5f*STROKE_WIDTH/2.0f, 
+						(WIDTH-(BUFFER+.5f*STROKE_WIDTH/2.0f))*(1-p), 
+						(HEIGHT-(BUFFER+.5f*STROKE_WIDTH/2.0f))
+					  );
+		//mInnerRect.set( BUFFER, BUFFER, WIDTH*p,HEIGHT*p);
 		
-		// Inner paint
-		canvas.drawCircle(w2,h2,mInnerRadius,mInnerPaint);
+		canvas.drawRoundRect(mInnerRect, ROUND, ROUND, mInnerPaint);
 		
 		return bitmap;
 		
