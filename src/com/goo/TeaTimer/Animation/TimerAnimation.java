@@ -2,6 +2,8 @@ package com.goo.TeaTimer.Animation;
 
 import java.util.Vector;
 
+import com.goo.TeaTimer.R;
+
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -10,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 public class TimerAnimation extends ImageView implements OnClickListener
@@ -17,6 +20,8 @@ public class TimerAnimation extends ImageView implements OnClickListener
 	Vector<TimerDrawing> mDrawings = null;
 	int mIndex = 0;
 	int mLastTime =0,mLastMax=0;
+	
+	Context mContext;
 	
 	public interface TimerDrawing
 	{
@@ -33,6 +38,7 @@ public class TimerAnimation extends ImageView implements OnClickListener
 		super(context, attrs);
 		
 		Resources r = getResources();
+		mContext = context;
 		
 		mDrawings = new Vector<TimerDrawing>();
 		mDrawings.add(new CircleAnimation(r));
@@ -55,9 +61,13 @@ public class TimerAnimation extends ImageView implements OnClickListener
 
 	public void onClick(View v) 
 	{	
+		startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
+		
 		Log.v("Timer", "click");
 		mIndex++;
 		mIndex %= mDrawings.size();
+		
+		startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_in));
 		
 		redraw();
 	}
