@@ -2,5 +2,6 @@
 <resources>
 	<color name="tea_fill">#c9ea91</color>
 <color name="tea_bg">#101010</color>
+<color name="dark_gray">#3C3C3C</color>
 </resources>
 

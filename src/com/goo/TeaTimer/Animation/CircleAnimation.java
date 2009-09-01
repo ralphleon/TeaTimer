@@ -38,7 +38,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		mInnerPaint.setColor(Color.rgb(24,24,24));
 		
 		mSecondPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mSecondPaint.setColor(Color.rgb(60,60,60));
+		mSecondPaint.setColor(resources.getColor(R.color.dark_gray));
 		
 		mMsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mMsPaint.setColor(Color.rgb(90,90,90));

@@ -37,7 +37,7 @@ public class TimerAnimation extends ImageView implements OnClickListener
 		mDrawings = new Vector<TimerDrawing>();
 		mDrawings.add(new CircleAnimation(r));
 		mDrawings.add(new TrashCupAnimation(r));
-		mDrawings.add(new BarAnimation(r));
+		//mDrawings.add(new BarAnimation(r));
 		
 		setOnClickListener(this);
 	}

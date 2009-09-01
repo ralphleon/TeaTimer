@@ -13,15 +13,35 @@ import android.graphics.RectF;
 
 class TrashCupAnimation implements TimerAnimation.TimerDrawing
 {
-	Resources mResources = null;
-	
 	// buffer 
 	private final int TOP_BUFFER = 3;
 	private final int BOTTOM_BUFFER = 5;
+
+	private Bitmap mCupBitmap;
+
+	private int mWidth;
+
+	private int mHeight;
 	
-	public TrashCupAnimation(Resources r)
+	private Paint mProgressPaint,mBgPaint;
+	
+	private RectF mTeaRect;
+	
+	public TrashCupAnimation(Resources resources)
 	{
-		mResources = r;
+		// Load the bitmap
+		mCupBitmap  = BitmapFactory.decodeResource(resources, R.drawable.cup);
+		mWidth  = mCupBitmap.getWidth();
+		mHeight = mCupBitmap.getHeight();
+		
+		mProgressPaint = new Paint();
+		mProgressPaint.setColor(resources.getColor(R.color.tea_fill));
+		
+		mBgPaint = new Paint();
+		mBgPaint.setColor(resources.getColor(R.color.dark_gray));
+		
+		mTeaRect = new RectF(0,0,0,0);
+		
 	}
 	
 	/**
@@ -31,35 +51,20 @@ class TrashCupAnimation implements TimerAnimation.TimerDrawing
 	 */
 	public Bitmap updateImage(int time,int max)
 	{	
-		
-		// Load the bitmap
-		Bitmap cup  = BitmapFactory.decodeResource(mResources, R.drawable.cup);
-		int w = cup.getWidth();
-		int h = cup.getHeight();
-		
-		Bitmap bitmap = Bitmap.createBitmap(w,h,Bitmap.Config.RGB_565);
-		
-		Paint paint = new Paint();
+		Bitmap bitmap = Bitmap.createBitmap(mWidth,mHeight,Bitmap.Config.RGB_565);
+		Canvas canvas = new Canvas(bitmap);
 		
 		float p = (max == 0) ? 0 : (time/(float)max);
 		
 		// Define the drawing rects
-		RectF teaRect = new RectF(0,(h-TOP_BUFFER)*p+BOTTOM_BUFFER,w,h+BOTTOM_BUFFER);
-		RectF fillRect = new RectF(0,0,w,h);
-		
-		Canvas canvas = new Canvas(bitmap);
-		
-		// Fill the entire bg the correct color
-		canvas.drawColor(Color.rgb(24,24,24));
+		mTeaRect.set(0,(mHeight-TOP_BUFFER)*p+BOTTOM_BUFFER,mWidth,mHeight+BOTTOM_BUFFER);
 		
 		// Unused part of the cup
-		paint.setColor(R.color.tea_bg);
-		canvas.drawRect(fillRect, paint);
+		canvas.drawPaint(mBgPaint);
 		
 		// The filled part of the cup
-		paint.setColor(mResources.getColor(R.color.tea_fill));
-		canvas.drawRect(teaRect,paint);
-		canvas.drawBitmap(cup, 0, 0, paint);
+		canvas.drawRect(mTeaRect,mProgressPaint);
+		canvas.drawBitmap(mCupBitmap, 0, 0, null);
 		
 		// Switch out the bitmap
 		return bitmap;	
