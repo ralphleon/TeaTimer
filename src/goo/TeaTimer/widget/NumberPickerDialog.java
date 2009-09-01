@@ -17,9 +17,9 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-package com.goo.TeaTimer.widget;
+package goo.TeaTimer.widget;
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;

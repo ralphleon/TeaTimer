@@ -1,4 +1,4 @@
-package com.goo.TeaTimer.Animation;
+package goo.TeaTimer.Animation;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 
 class BarAnimation implements TimerAnimation.TimerDrawing
 {

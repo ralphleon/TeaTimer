@@ -1,8 +1,8 @@
-package com.goo.TeaTimer.Animation;
+package goo.TeaTimer.Animation;
 
-import com.goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
+import goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

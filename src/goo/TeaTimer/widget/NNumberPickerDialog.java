@@ -1,4 +1,4 @@
-package com.goo.TeaTimer.widget;
+package goo.TeaTimer.widget;
 
 /*
  * ASTRID: Android's Simple Task Recording Dashboard
@@ -20,7 +20,7 @@ package com.goo.TeaTimer.widget;
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 
 import java.util.LinkedList;
 import java.util.List;

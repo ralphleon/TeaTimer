@@ -9,7 +9,7 @@
  *  
  */
 
-package com.goo.TeaTimer.widget;
+package goo.TeaTimer.widget;
 
 import android.app.TimePickerDialog;
 import android.content.Context;

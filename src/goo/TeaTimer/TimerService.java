@@ -9,9 +9,9 @@
  *  
  */
 
-package com.goo.TeaTimer;
+package goo.TeaTimer;
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

@@ -1,7 +1,7 @@
-package com.goo.TeaTimer;
+package goo.TeaTimer;
 
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;

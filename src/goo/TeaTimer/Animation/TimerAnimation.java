@@ -1,8 +1,8 @@
-package com.goo.TeaTimer.Animation;
+package goo.TeaTimer.Animation;
 
 import java.util.Vector;
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
 
 
 import android.content.Context;

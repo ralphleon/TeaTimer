@@ -9,18 +9,19 @@
  *  
  */
 
-package com.goo.TeaTimer;
+package goo.TeaTimer;
 
-import com.goo.TeaTimer.R;
+import goo.TeaTimer.R;
+
+import goo.TeaTimer.Animation.TimerAnimation;
+import goo.TeaTimer.widget.NNumberPickerDialog;
+import goo.TeaTimer.widget.NumberPicker;
+import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
 
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.goo.TeaTimer.Animation.TimerAnimation;
-import com.goo.TeaTimer.widget.NNumberPickerDialog;
-import com.goo.TeaTimer.widget.NumberPicker;
-import com.goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
 
 
 import android.app.Activity;
