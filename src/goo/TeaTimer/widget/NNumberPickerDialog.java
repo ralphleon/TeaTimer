@@ -43,6 +43,8 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
         void onNumbersPicked(int[] number);
     }
 
+    private static int [] mInitValues;
+    
     private final List<NumberPicker>      pickers = new LinkedList<NumberPicker>();
     private final OnNNumberPickedListener mCallback;
 
@@ -60,10 +62,13 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
      */
     public NNumberPickerDialog(Context context, OnNNumberPickedListener callBack,
             String title, int[] initialValue, int[] incrementBy, int[] start,
-            int[] end, String[] separators,NumberPicker.Formatter [] format) {
+            int[] end, String[] separators,NumberPicker.Formatter [] format)
+    {
         super(context);
+        
         mCallback = callBack;
-
+        mInitValues = initialValue;
+        
         setButton(context.getText(android.R.string.ok), this);
         setButton2(context.getText(android.R.string.cancel), (OnClickListener) null);
 
@@ -103,7 +108,7 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
             }
         }
     }
-
+    
     public void setInitialValues(int[] values) {
         for(int i = 0; i < pickers.size(); i++)
             pickers.get(i).setCurrent(values[i]);
