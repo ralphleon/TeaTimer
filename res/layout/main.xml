@@ -33,14 +33,33 @@
 
 </LinearLayout>
 
+<RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:paddingLeft="18px"
+	android:paddingRight="10px"
+	android:paddingTop="13px"
+	android:paddingBottom="5px"
+>
+
 <goo.TeaTimer.Animation.TimerAnimation
 	android:id="@+id/imageView"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:padding="20px"
+	android:gravity="center"
 	android:adjustViewBounds="true"
 	android:scaleType="center" 
+	android:paddingTop="10px"
 />
+
+<goo.TeaTimer.widget.PauseButton
+	android:id="@+id/pauseButton"
+	android:layout_width="55px"
+	android:layout_height="55px"
+	android:gravity="top|right"
+	/>
+	
+</RelativeLayout>	
 
 </LinearLayout>
 

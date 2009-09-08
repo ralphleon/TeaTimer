@@ -63,7 +63,6 @@ public class TimerAnimation extends ImageView implements OnClickListener
 	{	
 		startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
 		
-		Log.v("Timer", "click");
 		mIndex++;
 		mIndex %= mDrawings.size();
 		
