@@ -11,22 +11,17 @@
 
 package goo.TeaTimer;
 
-import goo.TeaTimer.R;
-
 import goo.TeaTimer.Animation.TimerAnimation;
-import goo.TeaTimer.widget.NNumberPickerDialog;
-import goo.TeaTimer.widget.NumberPicker;
+import goo.TeaTimer.widget.*;
 import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
+
 
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
-
 import android.app.Activity;
 import android.app.Dialog;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,7 +49,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	
 	private final int TIMER_TIC = 500;
 	
-	private enum State{ RUNNING, STOPPED };
+	private enum State{ RUNNING, STOPPED, PAUSED };
 	
 	private State mCurrentState = State.STOPPED;
 	
@@ -101,6 +96,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		Button startButton = (Button)findViewById(R.id.stop);
         startButton.setOnClickListener(this);
        
+        PauseButton pauseButton = (PauseButton)findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(this);
+        
         clearTime();
     }
     
@@ -256,15 +254,29 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	{
 		if(mCurrentState != state){
 		
-			if(state == State.RUNNING){
-				Button b = (Button)findViewById(R.id.stop);
-				b.setText(R.string.Stop);	
+			switch(state)
+			{
+				case RUNNING:
+				{
+					Button b = (Button)findViewById(R.id.stop);
+					b.setText(R.string.Stop);	
+				}break;
+			
+				case STOPPED:
+				{	
+					Button b = (Button)findViewById(R.id.stop);
+				
+					b.setText(R.string.Start);
+					clearTime();
+				}break;
+			
+				case PAUSED:
+				{
+			
+				}
+				
 			}
-			else if(state == State.STOPPED){
-				Button b = (Button)findViewById(R.id.stop);
-				b.setText(R.string.Start);
-				clearTime();
-			}
+			
 			mCurrentState = state;
 		}
 	}
@@ -323,16 +335,50 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		onUpdateTime();
 	}
 
-	public void onClick(View v) {
-		Button b = (Button)v;
+	public void onClick(View v) 
+	{
+		// User pressed the start/stop button
+		if(v instanceof Button){
 		
-		if(b != null){
-			if(b.getText() == getText(R.string.Stop)){	
-				onTimerStop();	
-			}else{
-				showDialog(0);
+			switch(mCurrentState){
+				case RUNNING:
+					onTimerStop();
+					break;
+				case STOPPED:
+				case PAUSED:
+					showDialog(0);
+					break;
 			}
 		}
 		
+		// User pressed the pause button
+		else if(v instanceof PauseButton)
+		{
+			switch(mCurrentState){
+				case RUNNING:
+					pauseTimer();
+					break;
+				case PAUSED:
+					resumeTimer();
+					break;
+			}
+		}	
+	}
+
+	private void resumeTimer() 
+	{
+		onTimerStart(mTime,true);
+		enterState(State.RUNNING);
+	}
+	
+	private void pauseTimer()
+	{
+		mTimer.cancel();
+		mTimer = null;
+		
+		Intent svc = new Intent(this, TimerService.class);
+		stopService(svc);
+		
+		enterState(State.PAUSED);
 	}
 }

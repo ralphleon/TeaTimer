@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-class PauseButton extends View
+public class PauseButton extends View
 {
 	final int PADDING = 5,PAUSE_MID_DELTA=5,PAUSE_HEIGHT=9,PAUSE_STROKE=6;
 	
@@ -36,6 +36,9 @@ class PauseButton extends View
 		mPausePaint.setColor(context.getResources().getColor(android.R.color.background_dark));
 		mPausePaint.setStyle(Paint.Style.STROKE);
 		mPausePaint.setStrokeWidth(PAUSE_STROKE);
+		
+		setClickable(true);
+		
 	}
 	/** @inheritDoc */
 	public void onDraw(Canvas canvas)
@@ -59,6 +62,7 @@ class PauseButton extends View
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
+		super.onTouchEvent(event);
 		
 		switch(event.getAction()){
 		
