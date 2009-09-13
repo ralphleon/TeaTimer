@@ -21,9 +21,9 @@
 	<TextView 
 		android:id="@+id/label" 
 	    android:layout_height="wrap_content" 
-	    android:layout_width="230px"
+	    android:layout_width="200px"
 		android:text="00:00"
-		android:textSize="70px"
+		android:textSize="60px"
 		android:gravity="center" android:paddingBottom="5px"/>
 		
 	<Button 
@@ -37,15 +37,33 @@
 
 </LinearLayout>
 
+
+<RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:gravity="center"
+	android:paddingBottom="10px"
+>
+
 <goo.TeaTimer.Animation.TimerAnimation
 	android:id="@+id/imageView"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:padding="20px"
-	android:adjustViewBounds="true"
 	android:gravity="center"
+	android:adjustViewBounds="true"
 	android:scaleType="center" 
 />
+
+<goo.TeaTimer.widget.PauseButton
+	android:id="@+id/pauseButton"
+	android:layout_width="55px"
+	android:layout_height="55px"
+	android:gravity="bottom|right"
+	android:layout_alignParentBottom="true"
+	android:layout_alignParentLeft="true"
+	/>
+	
+</RelativeLayout>	
 
 </LinearLayout>
 

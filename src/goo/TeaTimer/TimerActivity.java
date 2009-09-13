@@ -254,12 +254,16 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	{
 		if(mCurrentState != state){
 		
+			PauseButton pause = (PauseButton)findViewById(R.id.pauseButton);
+			
 			switch(state)
 			{
 				case RUNNING:
 				{
 					Button b = (Button)findViewById(R.id.stop);
 					b.setText(R.string.Stop);	
+					
+					pause.setPlay(false);
 				}break;
 			
 				case STOPPED:
@@ -268,13 +272,14 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				
 					b.setText(R.string.Start);
 					clearTime();
+					
+					pause.setPlay(false);
 				}break;
 			
 				case PAUSED:
 				{
-			
-				}
-				
+					pause.setPlay(true);
+				}		
 			}
 			
 			mCurrentState = state;
@@ -302,6 +307,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		if(service){
 			Intent svc = new Intent(this, TimerService.class);
 		    svc.putExtra("Time",time);
+		    svc.putExtra("OriginalTime", mLastTime);
 			startService(svc);
 		}
 		
@@ -345,8 +351,10 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 					onTimerStop();
 					break;
 				case STOPPED:
-				case PAUSED:
 					showDialog(0);
+					break;
+				case PAUSED:
+					enterState(State.STOPPED);		
 					break;
 			}
 		}

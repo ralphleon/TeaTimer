@@ -49,6 +49,8 @@ public class TimerService extends Service
 	/** increment for the timer */
 	private Timer mTimer = null;
 
+	private int mOriginalTime;
+
 	@Override 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -64,6 +66,8 @@ public class TimerService extends Service
 	{
 		super.onStart(intent,x);
 		mMax = intent.getIntExtra("Time", 0);
+		mOriginalTime = intent.getIntExtra("OriginalTime", 0);
+		
 		startTimer(mMax);
 	}
 	
@@ -116,7 +120,7 @@ public class TimerService extends Service
         boolean play = settings.getBoolean("PlaySound",true);
         
 		CharSequence text = getText(R.string.Notification);
-		CharSequence textLatest = "Timer for " + time2humanStr(mMax);
+		CharSequence textLatest = "Timer for " + time2humanStr(mOriginalTime);
 		
         Notification notification = new Notification(R.drawable.notification,
         		text,
