@@ -10,8 +10,8 @@
 	android:layout_height="wrap_content"
 	android:layout_marginLeft="10px"
 	android:layout_marginRight="10px"
-	android:paddingLeft="40px"
-	android:paddingRight="40px"
+	android:paddingLeft="30px"
+	android:paddingRight="30px"
 	android:background="@drawable/border"
 	android:paddingBottom="15px" android:layout_marginTop="15px">
 	
@@ -20,16 +20,30 @@
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content" 
 		android:text="00:00"
-		android:textSize="70px"
+		android:textSize="80px"
 		android:gravity="center" android:paddingBottom="5px"/>
 		
-	<Button 
-		android:id="@+id/stop"
-		android:layout_height="wrap_content" 
+	<LinearLayout 
 		android:layout_width="fill_parent"
-		android:text="@string/Start"
-		android:gravity="center"
-		/>
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		>
+		<Button 
+			android:id="@+id/stop"
+			android:layout_height="50px" 
+			android:layout_width="fill_parent"
+			android:text="@string/Start"
+			android:layout_weight=".5"
+			android:textSize="20px"
+			/>
+		<ImageButton 
+			android:id="@+id/pauseButton"
+			android:layout_height="50px" 
+			android:layout_width="fill_parent"
+			android:layout_weight=".5"
+			android:src="@drawable/pause_icon"
+			/>
+	</LinearLayout>
 
 </LinearLayout>
 
@@ -38,7 +52,7 @@
 	android:layout_height="fill_parent"
 	android:paddingLeft="18px"
 	android:paddingRight="10px"
-	android:paddingTop="13px"
+	android:paddingTop="5px"
 	android:paddingBottom="5px"
 >
 
@@ -52,13 +66,6 @@
 	android:paddingTop="10px"
 />
 
-<goo.TeaTimer.widget.PauseButton
-	android:id="@+id/pauseButton"
-	android:layout_width="55px"
-	android:layout_height="55px"
-	android:gravity="top|right"
-	/>
-	
 </RelativeLayout>	
 
 </LinearLayout>

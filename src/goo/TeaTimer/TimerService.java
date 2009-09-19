@@ -1,4 +1,4 @@
-/* @file TimerService.java
+/** @file TimerService.java
  * 
  * TeaTimer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,9 +157,9 @@ public class TimerService extends Service
 	static public int textSize(String str)
 	{
 		if(str.length() > 5){ 
-			return 50;
+			return 60;
 		}else{
-			return 70;
+			return 80;
 		}
 	}
 	

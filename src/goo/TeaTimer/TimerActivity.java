@@ -12,9 +12,9 @@
 package goo.TeaTimer;
 
 import goo.TeaTimer.Animation.TimerAnimation;
-import goo.TeaTimer.widget.*;
+import goo.TeaTimer.widget.NNumberPickerDialog;
+import goo.TeaTimer.widget.NumberPicker;
 import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
-
 
 import java.util.Date;
 import java.util.Timer;
@@ -25,6 +25,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,6 +86,12 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			}
 		}
     };
+
+	private Bitmap mPauseBitmap;
+
+	private Bitmap mPlayBitmap;
+
+	private ImageButton mPauseButton;
     
 	/** Called when the activity is first created. */
     @Override
@@ -96,8 +105,16 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		Button startButton = (Button)findViewById(R.id.stop);
         startButton.setOnClickListener(this);
        
-        PauseButton pauseButton = (PauseButton)findViewById(R.id.pauseButton);
-        pauseButton.setOnClickListener(this);
+        mPauseButton = (ImageButton)findViewById(R.id.pauseButton);
+        mPauseButton.setOnClickListener(this);
+        
+        mPauseBitmap = BitmapFactory.decodeResource(
+        		getResources(), R.drawable.pause_icon);
+        
+        mPlayBitmap = BitmapFactory.decodeResource(
+        		getResources(), R.drawable.play_icon);
+        
+        mPauseButton.setImageBitmap(mPauseBitmap);
         
         clearTime();
     }
@@ -127,6 +144,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	
     	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
     	
+    	// Get the preference manager
+    	//getDefaultSharedPreferences(android.content.Context) 
+    	
     	// Save our settings
     	SharedPreferences settings = getSharedPreferences("GooTimer",0);
         SharedPreferences.Editor editor = settings.edit();
@@ -154,7 +174,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	super.onResume();
     	
     	// check the timestamp from the last update and start the timer.
-    	// assumes the data has already beed loaded?
+    	// assumes the data has already been loaded?
     	SharedPreferences settings = getSharedPreferences("GooTimer",0);
         mLastTime = settings.getInt("LastTime",0);
         
@@ -210,24 +230,33 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	@Override
 	protected Dialog onCreateDialog(int id) 
 	{
-		// Only 1 dialog :)
-		switch (id) {
-    	case 0:
-    		
-    		int [] timeVec = TimerService.time2Mhs(mLastTime);
-    		int [] init = {timeVec[0],timeVec[1],timeVec[2]};
-    		int [] inc = {1,1,1};
-    		int [] start = {0,0,0};
-    		int [] end = {23,59,59};
-    		String [] sep = {":",".",""};
-    		NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
-    												NumberPicker.TWO_DIGIT_FORMATTER,
-    												NumberPicker.TWO_DIGIT_FORMATTER};
-    		
-    		return new NNumberPickerDialog(	this, this, "Hour:Min.Sec", 
-    										init, inc, start, end, sep,format);
-    	}
-    	return null;
+		int [] timeVec = TimerService.time2Mhs(mLastTime);
+		int [] init = {timeVec[0],timeVec[1],timeVec[2]};
+		int [] inc = {1,1,1};
+		int [] start = {0,0,0};
+		int [] end = {23,59,59};
+		String [] sep = {":",".",""};
+		
+		Log.v("Tea","create: " + init[0] +","+init[1]+","+init[2]);
+		
+		NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
+												NumberPicker.TWO_DIGIT_FORMATTER,
+												NumberPicker.TWO_DIGIT_FORMATTER};
+		
+		return new NNumberPickerDialog(	this, this, "Hour:Min.Sec", 
+										init, inc, start, end, sep,format);
+	}
+	
+	@Override
+	protected void onPrepareDialog(int x,Dialog d)
+	{
+		int [] timeVec = TimerService.time2Mhs(mLastTime);
+		int [] init = {timeVec[0],timeVec[1],timeVec[2]};
+		
+		NNumberPickerDialog dialog = (NNumberPickerDialog)d;
+		dialog.setInitialValues(init);
+
+		super.onPrepareDialog(x, d);
 	}
 	
 	/** 
@@ -254,7 +283,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	{
 		if(mCurrentState != state){
 		
-			PauseButton pause = (PauseButton)findViewById(R.id.pauseButton);
+			ImageButton pause = (ImageButton)findViewById(R.id.pauseButton);
 			
 			switch(state)
 			{
@@ -263,7 +292,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 					Button b = (Button)findViewById(R.id.stop);
 					b.setText(R.string.Stop);	
 					
-					pause.setPlay(false);
+					pause.setImageBitmap(mPauseBitmap);
 				}break;
 			
 				case STOPPED:
@@ -272,13 +301,13 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				
 					b.setText(R.string.Start);
 					clearTime();
-					
-					pause.setPlay(false);
+
+					pause.setImageBitmap(mPlayBitmap);
 				}break;
 			
 				case PAUSED:
 				{
-					pause.setPlay(true);
+					pause.setImageBitmap(mPlayBitmap);
 				}		
 			}
 			
@@ -360,7 +389,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		}
 		
 		// User pressed the pause button
-		else if(v instanceof PauseButton)
+		else if(v instanceof ImageButton)
 		{
 			switch(mCurrentState){
 				case RUNNING:
