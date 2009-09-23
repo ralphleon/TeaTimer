@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
     <string name="app_name">Tea Timer</string>
-<string name="Start">Set</string>
-<string name="Stop">Stop</string>
+	<string name="Start">Set Timer</string>
+	<string name="Stop">Clear</string>
 
-<string name="Notification">Tea time!</string>
+	<string name="Notification">Tea time!</string>
+	<string name="InputTitle">Hour:Min.Sec</string>
 </resources>

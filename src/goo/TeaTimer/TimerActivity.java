@@ -30,6 +30,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,31 +38,35 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
  * The main activity which shows the timer and allows the user to set the time
  * @author Ralph Gootee (rgootee@gmail.com)
- * @param <TimerAnimation>
  */
-public class TimerActivity extends Activity implements OnClickListener,OnNNumberPickedListener{
+public class TimerActivity extends Activity implements OnClickListener,OnNNumberPickedListener
+{
+	/** All possible timer states */
+	private enum State{ RUNNING, STOPPED, PAUSED };
 		
 	/** debug string */
 	private final String DEBUG_STR = getClass().getSimpleName();
 	
+	/** Update rate of the internal timer */
 	private final int TIMER_TIC = 500;
 	
-	private enum State{ RUNNING, STOPPED, PAUSED };
-	
+	/** The timer's current state */
 	private State mCurrentState = State.STOPPED;
 	
 	/** The maximum time */
 	private int mLastTime = 0;
 	
+	/** The current timer time */
 	private int mTime = 0;
 	
-	/** increment for the timer */
+	/** Internal increment class for the timer */
 	private Timer mTimer = null;
 
 	/** Handler for the message from the timer service */
@@ -87,11 +92,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		}
     };
 
-	private Bitmap mPauseBitmap;
-
-	private Bitmap mPlayBitmap;
-
 	private ImageButton mPauseButton;
+
+	private Bitmap mClearBitmap, mTimeBitmap,mPlayBitmap,mPauseBitmap;
     
 	/** Called when the activity is first created. */
     @Override
@@ -109,12 +112,20 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         mPauseButton.setOnClickListener(this);
         
         mPauseBitmap = BitmapFactory.decodeResource(
-        		getResources(), R.drawable.pause_icon);
+        		getResources(), R.drawable.ic_media_pause);
         
         mPlayBitmap = BitmapFactory.decodeResource(
-        		getResources(), R.drawable.play_icon);
+        		getResources(), R.drawable.ic_media_play);
+        
+        mTimeBitmap = BitmapFactory.decodeResource(
+        		getResources(), R.drawable.ic_dialog_time);
+         
+        mClearBitmap = BitmapFactory.decodeResource(
+        		getResources(), R.drawable.ic_delete);
         
         mPauseButton.setImageBitmap(mPauseBitmap);
+        
+        enterState(State.STOPPED);
         
         clearTime();
     }
@@ -123,8 +134,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
   
-    	//MenuItem item = menu.add(0, 0, 0, "Preferences");
-    	//item.setIcon(android.R.drawable.ic_menu_preferences);  
+    	MenuItem item = menu.add(0, 0, 0, "Preferences");
+    	item.setIcon(android.R.drawable.ic_menu_preferences);  
     	return super.onCreateOptionsMenu(menu);
     }
     
@@ -143,12 +154,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	super.onPause();
     	
     	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
-    	
-    	// Get the preference manager
-    	//getDefaultSharedPreferences(android.content.Context) 
-    	
+    
     	// Save our settings
-    	SharedPreferences settings = getSharedPreferences("GooTimer",0);
+    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("LastTime", mLastTime);
         editor.putInt("DrawingIndex",i.getIndex());
@@ -175,7 +183,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already been loaded?
-    	SharedPreferences settings = getSharedPreferences("GooTimer",0);
+    	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	   
         mLastTime = settings.getInt("LastTime",0);
         
         i.setIndex(settings.getInt("DrawingIndex",0));
@@ -243,7 +252,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 												NumberPicker.TWO_DIGIT_FORMATTER,
 												NumberPicker.TWO_DIGIT_FORMATTER};
 		
-		return new NNumberPickerDialog(	this, this, "Hour:Min.Sec", 
+		return new NNumberPickerDialog(	this, this, getResources().getString(R.string.InputTitle), 
 										init, inc, start, end, sep,format);
 	}
 	
@@ -281,38 +290,38 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	 */
 	private void enterState(State state)
 	{
-		if(mCurrentState != state){
+		ImageButton pause = (ImageButton)findViewById(R.id.pauseButton);
 		
-			ImageButton pause = (ImageButton)findViewById(R.id.pauseButton);
-			
-			switch(state)
+		switch(state)
+		{
+			case RUNNING:
 			{
-				case RUNNING:
-				{
-					Button b = (Button)findViewById(R.id.stop);
-					b.setText(R.string.Stop);	
-					
-					pause.setImageBitmap(mPauseBitmap);
-				}break;
-			
-				case STOPPED:
-				{	
-					Button b = (Button)findViewById(R.id.stop);
+				Button b = (Button)findViewById(R.id.stop);
+				b.setText(R.string.Stop);	
+				b.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete, 0, 0, 0);
 				
-					b.setText(R.string.Start);
-					clearTime();
-
-					pause.setImageBitmap(mPlayBitmap);
-				}break;
-			
-				case PAUSED:
-				{
-					pause.setImageBitmap(mPlayBitmap);
-				}		
-			}
-			
-			mCurrentState = state;
+				pause.setVisibility(View.VISIBLE);
+				pause.setImageBitmap(mPauseBitmap);
+			}break;
+		
+			case STOPPED:
+			{	
+				Button b = (Button)findViewById(R.id.stop);
+				pause.setVisibility(View.GONE);
+				
+				b.setText(R.string.Start);
+				b.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_dialog_time, 0, 0, 0);
+				clearTime();
+				
+			}break;
+		
+			case PAUSED:
+			{
+				pause.setImageBitmap(mPlayBitmap);
+			}break;	
 		}
+			
+		mCurrentState = state;
 	}
 	
 	private void onTimerStop()

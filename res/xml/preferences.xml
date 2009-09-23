@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- This is a primitive example showing the different types of preferences available. -->
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -9,13 +8,20 @@
         <CheckBoxPreference
                 android:key="PlaySound"
                 android:title="Notification Sound"
-                android:summary="Should the timer notification play a diddy." />
+                android:summary="Should the timer notification play a diddy."
+                android:defaultValue="True" />
 
         <CheckBoxPreference
                 android:key="Vibrate"
                 android:title="Notification Vibrate"
-                android:summary="Should the timer notification Vibrate" />
-            
+                android:summary="Should the timer notification Vibrate."
+                android:defaultValue="True" />
+        
+        <CheckBoxPreference
+                android:key="LED"
+                android:title="LED Notification"
+                android:summary="Blink the LED lights during the notification." 
+                android:defaultValue="True" />
     </PreferenceCategory>
                     
 </PreferenceScreen>

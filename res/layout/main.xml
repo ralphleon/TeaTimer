@@ -27,7 +27,16 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
+		android:id="@+id/control"
 		>
+		<ImageButton 
+			android:id="@+id/pauseButton"
+			android:layout_height="50px" 
+			android:layout_width="fill_parent"
+			android:layout_weight=".5"
+			android:src="@drawable/ic_media_pause"
+			/>
+		
 		<Button 
 			android:id="@+id/stop"
 			android:layout_height="50px" 
@@ -35,13 +44,7 @@
 			android:text="@string/Start"
 			android:layout_weight=".5"
 			android:textSize="20px"
-			/>
-		<ImageButton 
-			android:id="@+id/pauseButton"
-			android:layout_height="50px" 
-			android:layout_width="fill_parent"
-			android:layout_weight=".5"
-			android:src="@drawable/pause_icon"
+			android:drawableLeft="@drawable/ic_dialog_time"
 			/>
 	</LinearLayout>
 

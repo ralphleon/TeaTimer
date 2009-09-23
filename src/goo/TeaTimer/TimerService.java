@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -115,9 +116,12 @@ public class TimerService extends Service
 	public void showFinishedNotification()
 	{
 		Log.v(DEBUG,"Showing Notification");
-	
-	 	SharedPreferences settings = getSharedPreferences("GooTimer",0);
+		
+		// Load the settings
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         boolean play = settings.getBoolean("PlaySound",true);
+        boolean led = settings.getBoolean("LED",true);
+        boolean vibrate = settings.getBoolean("Vibrate",true);
         
 		CharSequence text = getText(R.string.Notification);
 		CharSequence textLatest = "Timer for " + time2humanStr(mOriginalTime);
@@ -126,13 +130,18 @@ public class TimerService extends Service
         		text,
                 System.currentTimeMillis());
 
-        notification.defaults = Notification.DEFAULT_VIBRATE;
+        // Vibrate
+        if(vibrate){
+        	notification.defaults = Notification.DEFAULT_VIBRATE;    	
+        }
         
         // Have a light
-        notification.ledARGB = 0xff00ff00;
-        notification.ledOnMS = 300;
-        notification.ledOffMS = 1000;
-        notification.flags |= Notification.FLAG_SHOW_LIGHTS |  Notification.FLAG_AUTO_CANCEL;
+        if(led){
+	        notification.ledARGB = 0xff00ff00;
+	        notification.ledOnMS = 300;
+	        notification.ledOffMS = 1000;
+	        notification.flags |= Notification.FLAG_SHOW_LIGHTS |  Notification.FLAG_AUTO_CANCEL;
+        }
         
         // Play a sound!
         if(play){
