@@ -29,22 +29,33 @@
 		android:orientation="horizontal"
 		android:id="@+id/control"
 		>
+	
 		<ImageButton 
 			android:id="@+id/pauseButton"
 			android:layout_height="50px" 
 			android:layout_width="fill_parent"
 			android:layout_weight=".5"
-			android:src="@drawable/ic_media_pause"
+			android:src="@drawable/pause"
+			android:paddingLeft="15px"
 			/>
 		
+		<ImageButton 
+			android:id="@+id/cancelButton"
+			android:layout_height="50px" 
+			android:layout_width="fill_parent"
+			android:layout_weight=".5"
+			android:src="@drawable/cancel"
+			android:paddingLeft="15px"
+			/>
+			
 		<Button 
-			android:id="@+id/stop"
+			android:id="@+id/setButton"
 			android:layout_height="50px" 
 			android:layout_width="fill_parent"
 			android:text="@string/Start"
 			android:layout_weight=".5"
 			android:textSize="20px"
-			android:drawableLeft="@drawable/ic_dialog_time"
+			android:drawableLeft="@drawable/set"
 			/>
 	</LinearLayout>
 

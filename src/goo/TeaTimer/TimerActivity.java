@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +48,7 @@ import android.widget.Toast;
 public class TimerActivity extends Activity implements OnClickListener,OnNNumberPickedListener
 {
 	/** All possible timer states */
-	private enum State{ RUNNING, STOPPED, PAUSED };
+	private final static int RUNNING=0, STOPPED=1, PAUSED=2;
 		
 	/** debug string */
 	private final String DEBUG_STR = getClass().getSimpleName();
@@ -58,7 +57,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	private final int TIMER_TIC = 500;
 	
 	/** The timer's current state */
-	private State mCurrentState = State.STOPPED;
+	private int mCurrentState = STOPPED;
 	
 	/** The maximum time */
 	private int mLastTime = 0;
@@ -76,17 +75,19 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         public void handleMessage(Message msg) {
 			
 			if(msg.arg1 <= 0){
-				onTimerStop();
 				
-				// Show a finished toast since the view was in focus!
-				Context context = getApplicationContext();
-				CharSequence text = "Timer Finished!";
-				Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
-			}
-			else{
+				if(mTimer != null){
+					onTimerStop();
+				
+					// Show a finished toast since the view was in focus!
+					Context context = getApplicationContext();
+					CharSequence text = "Timer Finished!";
+					Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
+				}
+			}else{
 				mTime = msg.arg1;
 				
-				enterState(State.RUNNING);
+				enterState(RUNNING);
 				onUpdateTime();
 			}
 		}
@@ -94,60 +95,56 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 
 	private ImageButton mPauseButton;
 
-	private Bitmap mClearBitmap, mTimeBitmap,mPlayBitmap,mPauseBitmap;
+	private Bitmap mPlayBitmap,mPauseBitmap;
     
-	/** Called when the activity is first created. */
+	/** Called when the activity is first created.
+     *	{ @inheritDoc} 
+     */
     @Override
     public void onCreate(Bundle savedInstanceState)
-    {
-    	//Log.v(DEBUG_STR,"Activity has been created...");
-        
+    {    
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-		Button startButton = (Button)findViewById(R.id.stop);
-        startButton.setOnClickListener(this);
+		ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(this);
+        
+		Button setButton = (Button)findViewById(R.id.setButton);
+        setButton.setOnClickListener(this);
        
         mPauseButton = (ImageButton)findViewById(R.id.pauseButton);
         mPauseButton.setOnClickListener(this);
         
         mPauseBitmap = BitmapFactory.decodeResource(
-        		getResources(), R.drawable.ic_media_pause);
+        		getResources(), R.drawable.pause);
         
         mPlayBitmap = BitmapFactory.decodeResource(
-        		getResources(), R.drawable.ic_media_play);
-        
-        mTimeBitmap = BitmapFactory.decodeResource(
-        		getResources(), R.drawable.ic_dialog_time);
-         
-        mClearBitmap = BitmapFactory.decodeResource(
-        		getResources(), R.drawable.ic_delete);
-        
-        mPauseButton.setImageBitmap(mPauseBitmap);
-        
-        enterState(State.STOPPED);
+        		getResources(), R.drawable.play);
+   
+        enterState(STOPPED);
         
         clearTime();
     }
     
     /** { @inheritDoc} */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-  
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
     	MenuItem item = menu.add(0, 0, 0, "Preferences");
     	item.setIcon(android.R.drawable.ic_menu_preferences);  
     	return super.onCreateOptionsMenu(menu);
     }
     
-    /** when menu button option selected */
-	@Override public boolean onOptionsItemSelected(MenuItem item) {
-	  
+    /** { @inheritDoc} */
+	@Override 
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{  
 		// Only one item
-		startActivity(new Intent(this, TimerPrefActivity.class));
-		
+		startActivity(new Intent(this, TimerPrefActivity.class));	
 		return true;
 	}
     
+	/** { @inheritDoc} */
     @Override 
     public void onPause()
     {
@@ -159,21 +156,32 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("LastTime", mLastTime);
+        editor.putInt("CurrentTime",mTime);
         editor.putInt("DrawingIndex",i.getIndex());
+        editor.putInt("State", mCurrentState);
         
-        // Cancel our thread
-    	if(mTimer != null){
-    		mTimer.cancel();
-    		editor.putLong("TimeStamp", new Date().getTime() + mTime);
-    	}else{
-    		editor.putBoolean("Running",false);
-    		editor.putLong("TimeStamp", -1);
-    	}
-    	
+        switch(mCurrentState){
+        
+        	case RUNNING:
+        	{
+	        	if(mTimer != null){
+	        		mTimer.cancel();
+	        		editor.putLong("TimeStamp", new Date().getTime() + mTime);
+	        	}	
+        	}break;
+        	
+        	case STOPPED:
+        	case PAUSED:
+        	{
+        		editor.putLong("TimeStamp", 1);
+        	}break;
+        }
+        
         editor.commit();
         
     }
     
+    /** {@inheritDoc} */
     @Override 
     public void onResume()
     {
@@ -189,23 +197,41 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         
         i.setIndex(settings.getInt("DrawingIndex",0));
         
-        long timeStamp = settings.getLong("TimeStamp", -1);
+        int state = settings.getInt("State",0);
         
-        if(timeStamp != -1){
+        switch(state)
+        {
+        	case RUNNING:
+        	{
+        		long timeStamp = settings.getLong("TimeStamp", -1);
+                
+        		Date now = new Date();
+        		Date then = new Date(timeStamp);
+            	
+            	// We stil have a timer running!
+            	if(then.after(now)){
+            		int delta = (int)(then.getTime() - now.getTime());		
+            		onTimerStart(delta,false);
+            		mCurrentState = RUNNING;
+            	// All finished
+            	}else{
+            		clearTime();
+            		enterState(STOPPED);
+            	}
+        	}break;
         	
-        	Date now = new Date();
-        	Date then = new Date(timeStamp);
+        	case STOPPED:
+        	{
+        		enterState(STOPPED);
+        	}break;
         	
-        	// We stil have a timer running!
-        	if(then.after(now)){
-        		int delta = (int)(then.getTime() - now.getTime());		
-        		onTimerStart(delta,false);
+        	case PAUSED:
+        	{
+        		mTime = settings.getInt("CurrentTime",0);
+        		onUpdateTime();
+        		enterState(PAUSED);
+        	}break;
         	
-        	// All finished
-        	}else{
-        		clearTime();
-        		enterState(State.STOPPED);
-        	}
         }
     }
     
@@ -256,6 +282,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 										init, inc, start, end, sep,format);
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	protected void onPrepareDialog(int x,Dialog d)
 	{
@@ -288,35 +315,36 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	 * 
 	 * @param state the visual state that is being entered
 	 */
-	private void enterState(State state)
+	private void enterState(int state)
 	{
 		ImageButton pause = (ImageButton)findViewById(R.id.pauseButton);
+		ImageButton cancel = (ImageButton)findViewById(R.id.cancelButton);
+		Button set = (Button)findViewById(R.id.setButton);
 		
 		switch(state)
 		{
 			case RUNNING:
 			{
-				Button b = (Button)findViewById(R.id.stop);
-				b.setText(R.string.Stop);	
-				b.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete, 0, 0, 0);
-				
+				set.setVisibility(View.GONE);
+				cancel.setVisibility(View.VISIBLE);
 				pause.setVisibility(View.VISIBLE);
 				pause.setImageBitmap(mPauseBitmap);
 			}break;
 		
 			case STOPPED:
 			{	
-				Button b = (Button)findViewById(R.id.stop);
 				pause.setVisibility(View.GONE);
-				
-				b.setText(R.string.Start);
-				b.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_dialog_time, 0, 0, 0);
+				cancel.setVisibility(View.GONE);
+				set.setVisibility(View.VISIBLE);	
 				clearTime();
 				
 			}break;
 		
 			case PAUSED:
 			{
+				set.setVisibility(View.GONE);
+				pause.setVisibility(View.VISIBLE);
+				cancel.setVisibility(View.VISIBLE);
 				pause.setImageBitmap(mPlayBitmap);
 			}break;	
 		}
@@ -324,23 +352,31 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		mCurrentState = state;
 	}
 	
+	/**
+	 * Stops the timer
+	 */
 	private void onTimerStop()
 	{
 		// Stop our timer service
-		enterState(State.STOPPED);		
+		enterState(STOPPED);		
 		Intent svc = new Intent(this, TimerService.class);
 		stopService(svc);
 		
 		// Stop our local timer
 		mTimer.cancel();
 	}
-
+	
+	/**
+	 * Starts the timer at the given time
+	 * @param time with which to count down
+	 * @param service whether or not to start the service as well
+	 */
 	private void onTimerStart(int time,boolean service)
 	{
 		Log.v(DEBUG_STR,"Starting the timer...");
 		
 		// Star external service
-		enterState(State.RUNNING);
+		enterState(RUNNING);
 		
 		if(service){
 			Intent svc = new Intent(this, TimerService.class);
@@ -360,6 +396,25 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	      		0,
 	      		TIMER_TIC);
 	}
+	
+	/** Resume the time after being paused */
+	private void resumeTimer() 
+	{
+		onTimerStart(mTime,true);
+		enterState(RUNNING);
+	}
+	
+	/** Pause the timer and stop the timer service */
+	private void pauseTimer()
+	{
+		mTimer.cancel();
+		mTimer = null;
+		
+		Intent svc = new Intent(this, TimerService.class);
+		stopService(svc);
+		
+		enterState(PAUSED);
+	}
 
 	/** Called whenever the internal timer is updated */
 	protected void onTimerTic() 
@@ -372,59 +427,41 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			mHandler.sendMessage(msg);
 		}
 	}
-
+	
+	/** Clears the time, sets the image and label to zero */
 	private void clearTime()
 	{
 		mTime = 0;
 		onUpdateTime();
 	}
 
+	/** {@inheritDoc} */
 	public void onClick(View v) 
 	{
-		// User pressed the start/stop button
-		if(v instanceof Button){
+		switch(v.getId()){
 		
-			switch(mCurrentState){
-				case RUNNING:
-					onTimerStop();
-					break;
-				case STOPPED:
-					showDialog(0);
-					break;
-				case PAUSED:
-					enterState(State.STOPPED);		
-					break;
-			}
-		}
-		
-		// User pressed the pause button
-		else if(v instanceof ImageButton)
-		{
-			switch(mCurrentState){
+			case R.id.setButton:
+			{
+				showDialog(0);		
+			}break;
+			
+			case R.id.pauseButton:
+			{
+				switch(mCurrentState){
 				case RUNNING:
 					pauseTimer();
 					break;
 				case PAUSED:
 					resumeTimer();
 					break;
-			}
-		}	
+				}		
+			}break;
+			
+			case R.id.cancelButton:
+			{
+				onTimerStop();	
+			}break;
+		}
 	}
-
-	private void resumeTimer() 
-	{
-		onTimerStart(mTime,true);
-		enterState(State.RUNNING);
-	}
-	
-	private void pauseTimer()
-	{
-		mTimer.cancel();
-		mTimer = null;
-		
-		Intent svc = new Intent(this, TimerService.class);
-		stopService(svc);
-		
-		enterState(State.PAUSED);
-	}
+			
 }
