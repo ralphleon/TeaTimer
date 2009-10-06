@@ -1,15 +1,14 @@
 package goo.TeaTimer.Animation;
 
-import java.util.Vector;
-
 import goo.TeaTimer.R;
 
+import java.util.Vector;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -20,6 +19,8 @@ public class TimerAnimation extends ImageView implements OnClickListener
 	Vector<TimerDrawing> mDrawings = null;
 	int mIndex = 0;
 	int mLastTime =0,mLastMax=0;
+	
+	Bitmap mBitmap = null;
 	
 	Context mContext;
 	
@@ -43,6 +44,8 @@ public class TimerAnimation extends ImageView implements OnClickListener
 		mDrawings = new Vector<TimerDrawing>();
 		mDrawings.add(new CircleAnimation(r));
 		mDrawings.add(new TrashCupAnimation(r));
+		mDrawings.add(new TresBarAnimation(r));
+		mDrawings.add(new Teapot(r));
 		//mDrawings.add(new BarAnimation(r));
 		
 		setOnClickListener(this);

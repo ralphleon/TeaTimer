@@ -22,6 +22,8 @@
                 android:title="LED Notification"
                 android:summary="Blink the LED lights during the notification." 
                 android:defaultValue="True" />
+
+        		
     </PreferenceCategory>
                     
 </PreferenceScreen>

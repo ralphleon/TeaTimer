@@ -17,8 +17,8 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 {
 	Context mContext = null;
 	// buffer 
-	private final int WIDTH = 180;
-	private final int HEIGHT = 180;
+	private final int WIDTH = 200;
+	private final int HEIGHT = 200;
 	
 	private final int START_ANGLE = 270;
 	
@@ -27,7 +27,8 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	private Paint mCirclePaint,mInnerPaint,mArcPaint,mSecondPaint,mMsPaint;
 
 	/** Rects for the arcs */
-	private RectF mArcRect,mSecondRect,mMsRect;
+	private RectF mArcRect,mSecondRect;
+	private Bitmap mBitmap;
 	
 	public CircleAnimation(Resources resources)
 	{
@@ -66,10 +67,10 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		float h2 = HEIGHT/2.0f;
 		
 		// Create the rects
-		mMsRect = new RectF(w2-mMsRadius, h2-mMsRadius, w2+mMsRadius, h2+mMsRadius);	
 		mSecondRect = new RectF(w2-mSecondRadius, h2-mSecondRadius, w2+mSecondRadius, h2+mSecondRadius);
 		mArcRect = new RectF(w2-mRadius, h2-mRadius, w2+mRadius, h2+mRadius);
-		
+
+		mBitmap = Bitmap.createBitmap(WIDTH,HEIGHT,Bitmap.Config.ARGB_8888);
 	}
 	
 	/**
@@ -79,7 +80,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	 */
 	public Bitmap updateImage(int time,int max)
 	{	
-		Bitmap bitmap = Bitmap.createBitmap(WIDTH,HEIGHT,Bitmap.Config.ARGB_8888);
+		mBitmap.eraseColor(Color.TRANSPARENT);
 		
 		float p = (max == 0) ? 0 : (time/(float)max);
 		
@@ -91,10 +92,10 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		float w2 = WIDTH/2.0f;
 		float h2 = HEIGHT/2.0f;
 		
-		Canvas canvas = new Canvas(bitmap);
+		Canvas canvas = new Canvas(mBitmap);
 		
 		// Ms Arc
-		//canvas.drawArc(mMsRect, pMs*360, SECOND_SWEEP, true, mMsPaint);
+		canvas.drawCircle(w2,h2,mSecondRadius+1, mMsPaint);
 	
 		//Second arc
 		canvas.drawCircle(w2,h2,mSecondRadius,mMsPaint);
@@ -109,7 +110,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		// Inner paint
 		canvas.drawCircle(w2,h2,mInnerRadius,mInnerPaint);
 		
-		return bitmap;
+		return mBitmap;
 		
 	}
 }

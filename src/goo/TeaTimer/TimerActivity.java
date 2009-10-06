@@ -21,15 +21,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -51,7 +57,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	private final static int RUNNING=0, STOPPED=1, PAUSED=2;
 		
 	/** debug string */
-	private final String DEBUG_STR = getClass().getSimpleName();
+	private final String TAG = getClass().getSimpleName();
 	
 	/** Update rate of the internal timer */
 	private final int TIMER_TIC = 500;
@@ -96,6 +102,12 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	private ImageButton mPauseButton;
 
 	private Bitmap mPlayBitmap,mPauseBitmap;
+
+	private AlarmManager mAlarmMgr;
+
+	private NotificationManager mNM;
+
+	private PendingIntent mPendingIntent;
     
 	/** Called when the activity is first created.
      *	{ @inheritDoc} 
@@ -122,7 +134,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         		getResources(), R.drawable.play);
    
         enterState(STOPPED);
-        
+
+        mAlarmMgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
+        mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         clearTime();
     }
     
@@ -181,13 +195,33 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         
     }
     
+    @Override
+    public void onNewIntent(Intent i)
+    { 	
+    	if(i.getBooleanExtra("Alarm",false)){
+
+            PowerManager pm = (PowerManager)getBaseContext().getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+            
+            wl.acquire();
+
+    		showFinishedNotification();
+    		
+            wl.release();
+
+    		
+    	}
+    }
+    
     /** {@inheritDoc} */
     @Override 
     public void onResume()
     {
-    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
+    	Log.v(TAG,"Resumed!");
     	
-    	super.onResume();
+      	super.onResume();
+	    	
+    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
     	
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already been loaded?
@@ -233,7 +267,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         	}break;
         	
         }
-    }
+	}
+
     
     /**
      * Updates the time 
@@ -359,8 +394,10 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	{
 		// Stop our timer service
 		enterState(STOPPED);		
-		Intent svc = new Intent(this, TimerService.class);
-		stopService(svc);
+		
+		if(mPendingIntent != null){
+			mAlarmMgr.cancel(mPendingIntent);
+		}
 		
 		// Stop our local timer
 		mTimer.cancel();
@@ -373,16 +410,20 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	 */
 	private void onTimerStart(int time,boolean service)
 	{
-		Log.v(DEBUG_STR,"Starting the timer...");
+		Log.v(TAG,"Starting the timer...");
 		
 		// Star external service
 		enterState(RUNNING);
 		
 		if(service){
-			Intent svc = new Intent(this, TimerService.class);
+			Intent svc = new Intent(this, TimerActivity.class);
 		    svc.putExtra("Time",time);
 		    svc.putExtra("OriginalTime", mLastTime);
-			startService(svc);
+		    svc.putExtra("Alarm", true);
+			
+		    mPendingIntent = PendingIntent.getActivity(this,  0,svc, Intent.FLAG_ACTIVITY_NEW_TASK);
+		    mAlarmMgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + time, mPendingIntent);
+		    //startService(svc);
 		}
 		
 		// Internal thread to properly update the GUI
@@ -410,8 +451,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		mTimer.cancel();
 		mTimer = null;
 		
-		Intent svc = new Intent(this, TimerService.class);
-		stopService(svc);
+		if(mPendingIntent != null){
+			mAlarmMgr.cancel(mPendingIntent);
+		}
 		
 		enterState(PAUSED);
 	}
@@ -463,5 +505,49 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			}break;
 		}
 	}
-			
+		
+	
+	public void showFinishedNotification()
+	{
+		
+		// Load the settings
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean play = settings.getBoolean("PlaySound",true);
+        boolean led = settings.getBoolean("LED",true);
+        boolean vibrate = settings.getBoolean("Vibrate",true);
+        
+		CharSequence text = getText(R.string.Notification);
+		CharSequence textLatest = "Timer for ";// + time2humanStr(0);//mOriginalTime);
+		
+        Notification notification = new Notification(R.drawable.notification,
+        		text,
+                System.currentTimeMillis());
+
+        // Vibrate
+        if(vibrate){
+        	notification.defaults = Notification.DEFAULT_VIBRATE;    	
+        }
+        
+        // Have a light
+        if(led){
+	        notification.ledARGB = 0xff00ff00;
+	        notification.ledOnMS = 300;
+	        notification.ledOffMS = 1000;
+	        notification.flags |= Notification.FLAG_SHOW_LIGHTS |  Notification.FLAG_AUTO_CANCEL;
+        }
+        
+        // Play a sound!
+        if(play){
+			Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
+	      	notification.sound = uri;
+        }
+        
+      	Intent intent = new Intent(this,TimerActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        notification.setLatestEventInfo(this, text,
+                       textLatest, contentIntent);
+
+        mNM.notify(0, notification);
+	}
 }
