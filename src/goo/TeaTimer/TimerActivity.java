@@ -23,19 +23,16 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -83,12 +80,14 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			if(msg.arg1 <= 0){
 				
 				if(mTimer != null){
-					onTimerStop();
-				
-					// Show a finished toast since the view was in focus!
+					
 					Context context = getApplicationContext();
-					CharSequence text = "Timer Finished!";
+					CharSequence text = getResources().getText(R.string.Notification);
 					Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
+					
+					clearTime();
+					enterState(STOPPED);		
+					mTimer.cancel();
 				}
 			}else{
 				mTime = msg.arg1;
@@ -105,8 +104,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 
 	private AlarmManager mAlarmMgr;
 
-	private NotificationManager mNM;
-
 	private PendingIntent mPendingIntent;
     
 	/** Called when the activity is first created.
@@ -115,7 +112,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     @Override
     public void onCreate(Bundle savedInstanceState)
     {    
-        super.onCreate(savedInstanceState);
+    	
+    	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
 		ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelButton);
@@ -134,9 +132,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         		getResources(), R.drawable.play);
    
         enterState(STOPPED);
-
-        mAlarmMgr = (AlarmManager)getBaseContext().getSystemService(Context.ALARM_SERVICE);
-        mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mAlarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         clearTime();
     }
     
@@ -179,6 +175,11 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         	case RUNNING:
         	{
 	        	if(mTimer != null){
+	        		
+	        		Context context = getApplicationContext();
+					CharSequence text = "Timer Finished!";
+					Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
+	        		
 	        		mTimer.cancel();
 	        		editor.putLong("TimeStamp", new Date().getTime() + mTime);
 	        	}	
@@ -194,25 +195,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         editor.commit();
         
     }
-    
-    @Override
-    public void onNewIntent(Intent i)
-    { 	
-    	if(i.getBooleanExtra("Alarm",false)){
-
-            PowerManager pm = (PowerManager)getBaseContext().getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-            
-            wl.acquire();
-
-    		showFinishedNotification();
-    		
-            wl.release();
-
-    		
-    	}
-    }
-    
+   
     /** {@inheritDoc} */
     @Override 
     public void onResume()
@@ -221,16 +204,15 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	
       	super.onResume();
 	    	
-    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
+    	TimerAnimation animation = (TimerAnimation)findViewById(R.id.imageView);
     	
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already been loaded?
     	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	   
-        mLastTime = settings.getInt("LastTime",0);
+        mLastTime = settings.getInt("LastTime",0);    
         
-        i.setIndex(settings.getInt("DrawingIndex",0));
-        
+        animation.setIndex(settings.getInt("DrawingIndex",0));
         int state = settings.getInt("State",0);
         
         switch(state)
@@ -289,8 +271,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	{
 		TextView label = (TextView)findViewById(R.id.label); 
 		
-		String str = TimerService.time2str(time);
-		int size = TimerService.textSize(str);
+		String str = TimerUtils.time2str(time);
+		int size = TimerUtils.textSize(str);
 		label.setTextSize(size);
 		label.setText(str);
 	}
@@ -300,7 +282,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	@Override
 	protected Dialog onCreateDialog(int id) 
 	{
-		int [] timeVec = TimerService.time2Mhs(mLastTime);
+		int [] timeVec = TimerUtils.time2Mhs(mLastTime);
 		int [] init = {timeVec[0],timeVec[1],timeVec[2]};
 		int [] inc = {1,1,1};
 		int [] start = {0,0,0};
@@ -321,7 +303,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	@Override
 	protected void onPrepareDialog(int x,Dialog d)
 	{
-		int [] timeVec = TimerService.time2Mhs(mLastTime);
+		int [] timeVec = TimerUtils.time2Mhs(mLastTime);
 		int [] init = {timeVec[0],timeVec[1],timeVec[2]};
 		
 		NNumberPickerDialog dialog = (NNumberPickerDialog)d;
@@ -387,17 +369,23 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		mCurrentState = state;
 	}
 	
+	private void stopAlarmTimer()
+	{
+		Log.v(TAG,"Stopping the alarm timer ...");		
+		mAlarmMgr.cancel(mPendingIntent);
+	}
+	
 	/**
 	 * Stops the timer
 	 */
 	private void onTimerStop()
 	{
+		Log.v(TAG,"Timer stopped");
+		
 		// Stop our timer service
 		enterState(STOPPED);		
 		
-		if(mPendingIntent != null){
-			mAlarmMgr.cancel(mPendingIntent);
-		}
+		stopAlarmTimer();
 		
 		// Stop our local timer
 		mTimer.cancel();
@@ -416,26 +404,24 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		enterState(RUNNING);
 		
 		if(service){
-			Intent svc = new Intent(this, TimerActivity.class);
-		    svc.putExtra("Time",time);
-		    svc.putExtra("OriginalTime", mLastTime);
-		    svc.putExtra("Alarm", true);
-			
-		    mPendingIntent = PendingIntent.getActivity(this,  0,svc, Intent.FLAG_ACTIVITY_NEW_TASK);
-		    mAlarmMgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + time, mPendingIntent);
-		    //startService(svc);
+		    Log.v(TAG,"Starting the timer service ...");
+		    Intent intent = new Intent( getApplicationContext(), TimerReceiver.class);
+		    intent.putExtra("SetTime",mLastTime);
+		    mPendingIntent = PendingIntent.getBroadcast( getApplicationContext(), 0 , intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		    mAlarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + time, mPendingIntent);	    
 		}
 		
 		// Internal thread to properly update the GUI
 		mTimer = new Timer();	
 		mTime = time;
-		mTimer.scheduleAtFixedRate( new TimerTask() {
-	        		public void run() {
-	          			onTimerTic();
-	        		}
-	      		},
-	      		0,
-	      		TIMER_TIC);
+		mTimer.scheduleAtFixedRate( new TimerTask() 
+			{
+	        	public void run() {
+	          		onTimerTic();
+	        	}
+	      	},
+	      	0,
+	      	TIMER_TIC);
 	}
 	
 	/** Resume the time after being paused */
@@ -451,9 +437,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		mTimer.cancel();
 		mTimer = null;
 		
-		if(mPendingIntent != null){
-			mAlarmMgr.cancel(mPendingIntent);
-		}
+		stopAlarmTimer();
 		
 		enterState(PAUSED);
 	}
@@ -490,64 +474,28 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			case R.id.pauseButton:
 			{
 				switch(mCurrentState){
-				case RUNNING:
-					pauseTimer();
-					break;
-				case PAUSED:
-					resumeTimer();
-					break;
+					case RUNNING:
+						pauseTimer();
+						break;
+					case PAUSED:
+						resumeTimer();
+						break;
 				}		
 			}break;
 			
 			case R.id.cancelButton:
 			{
-				onTimerStop();	
+				switch(mCurrentState){
+					case RUNNING:
+						onTimerStop();
+						break;
+					case PAUSED:
+						clearTime();
+						enterState(STOPPED);
+						break;
+				}	
 			}break;
 		}
 	}
 		
-	
-	public void showFinishedNotification()
-	{
-		
-		// Load the settings
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        boolean play = settings.getBoolean("PlaySound",true);
-        boolean led = settings.getBoolean("LED",true);
-        boolean vibrate = settings.getBoolean("Vibrate",true);
-        
-		CharSequence text = getText(R.string.Notification);
-		CharSequence textLatest = "Timer for ";// + time2humanStr(0);//mOriginalTime);
-		
-        Notification notification = new Notification(R.drawable.notification,
-        		text,
-                System.currentTimeMillis());
-
-        // Vibrate
-        if(vibrate){
-        	notification.defaults = Notification.DEFAULT_VIBRATE;    	
-        }
-        
-        // Have a light
-        if(led){
-	        notification.ledARGB = 0xff00ff00;
-	        notification.ledOnMS = 300;
-	        notification.ledOffMS = 1000;
-	        notification.flags |= Notification.FLAG_SHOW_LIGHTS |  Notification.FLAG_AUTO_CANCEL;
-        }
-        
-        // Play a sound!
-        if(play){
-			Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
-	      	notification.sound = uri;
-        }
-        
-      	Intent intent = new Intent(this,TimerActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this,  0,intent, Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        notification.setLatestEventInfo(this, text,
-                       textLatest, contentIntent);
-
-        mNM.notify(0, notification);
-	}
 }

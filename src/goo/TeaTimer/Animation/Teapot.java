@@ -10,26 +10,30 @@ import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.PorterDuff.Mode;
+import android.util.Log;
 
 class Teapot implements TimerAnimation.TimerDrawing
 {	
 	private Bitmap mCupBitmap;
 
-	private int mWidth = 250;
-	private int mHeight = 200;
+	private int mWidth = 0;
+	private int mHeight = 0;
 	
-	private Paint mProgressPaint;
+	private Paint mProgressPaint = null;
 
-	private Bitmap mBitmap;
+	private Bitmap mBitmap = null;
 
 	public Teapot(Resources resources)
 	{
 		mProgressPaint = new Paint();
-		mProgressPaint.setColor(Color.BLACK);
-		mProgressPaint.setAlpha(20);
+		mProgressPaint.setColor(Color.GRAY);
+		mProgressPaint.setAlpha(135);
 		mProgressPaint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
 		
 		mCupBitmap = BitmapFactory.decodeResource(resources, R.drawable.teapot);	
+		mHeight = mCupBitmap.getHeight();
+		mWidth = mCupBitmap.getWidth();
+
 		mBitmap = Bitmap.createBitmap(mWidth,mHeight,Bitmap.Config.ARGB_8888);
 	}
 	
@@ -45,7 +49,11 @@ class Teapot implements TimerAnimation.TimerDrawing
 		Canvas canvas = new Canvas(mBitmap);
 		canvas.drawBitmap(mCupBitmap, 0, 0,null);
 		
-		float p = (max == 0) ? 0 : (time/(float)max);
+		float p = (max != 0) ? (time/(float)max) : 0;
+		
+		if(p == 0) p = 1;
+		
+		Log.v("Ba","m: " + max + " t " + time + " p " + p);
 		
 		RectF fill = new RectF(0,mHeight*(p),mWidth,mHeight);
 		canvas.drawRect(fill,mProgressPaint);

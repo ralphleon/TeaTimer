@@ -6,4 +6,5 @@
 
 	<string name="Notification">Tea time!</string>
 	<string name="InputTitle">Hour:Min.Sec</string>
+
 </resources>

@@ -1,6 +1,5 @@
 package goo.TeaTimer.Animation;
-
-import goo.TeaTimer.TimerService;
+import goo.TeaTimer.TimerUtils;
 
 import goo.TeaTimer.R;
 import android.content.Context;
@@ -84,7 +83,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		
 		float p = (max == 0) ? 0 : (time/(float)max);
 		
-		int [] timeVec = TimerService.time2Mhs(time);
+		int [] timeVec = TimerUtils.time2Mhs(time);
 		
 		float pSecond = (max == 0) ? 1 : (float)((timeVec[2]/60.0)); 
 		float pMs = (float)((timeVec[3]/1000.00));

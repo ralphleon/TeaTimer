@@ -1,14 +1,13 @@
-package goo.TeaTimer.Animation;
+/*package goo.TeaTimer.Animation;
 
 import goo.TeaTimer.R;
-import goo.TeaTimer.TimerService;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
+import goo.TeaTimer.TimerUtils;
 
 class TresBarAnimation implements TimerAnimation.TimerDrawing
 {
@@ -54,7 +53,7 @@ class TresBarAnimation implements TimerAnimation.TimerDrawing
 	 * Updates the image to be in sync with the current time
 	 * @param time in milliseconds
 	 * @param max the original time set in milliseconds
-	 */
+	
 	public Bitmap updateImage(int time,int max)
 	{	
 		Bitmap bitmap = Bitmap.createBitmap(mWidth,mHeight,Bitmap.Config.ARGB_8888);
@@ -62,7 +61,7 @@ class TresBarAnimation implements TimerAnimation.TimerDrawing
 		bitmap.eraseColor(Color.TRANSPARENT);
 				
 		float p = (max == 0) ? 0 : (time/(float)max);
-		int [] timeVec = TimerService.time2Mhs(time);
+		int [] timeVec = TimerUtils.time2Mhs(time);
 		
 		float pSecond = (max == 0) ? 1 : (float)((timeVec[2]/60.0)); 
 		float pMs = (float)((timeVec[3]/1000.00));
@@ -83,4 +82,4 @@ class TresBarAnimation implements TimerAnimation.TimerDrawing
 		
 		return bitmap;	
 	}
-}
+}*/
