@@ -13,11 +13,13 @@ import android.util.Log;
 
 public class TimerReceiver extends BroadcastReceiver 
 {
+	private final static String TAG = TimerReceiver.class.getSimpleName();
+	
 	@Override
 	public void onReceive(Context context, Intent pintent) 
 	{
 		
-		Log.v("Timer Recvr","Showing notification...");
+		Log.v(TAG,"Showing notification...");
 		
 		int setTime = pintent.getIntExtra("SetTime",0);
 		String setTimeStr = TimerUtils.time2humanStr(setTime);
@@ -26,10 +28,10 @@ public class TimerReceiver extends BroadcastReceiver
 		
 		// Load the settings
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean play = settings.getBoolean("PlaySound",true);
         boolean led = settings.getBoolean("LED",true);
         boolean vibrate = settings.getBoolean("Vibrate",true);
-        
+        String notificationUri = settings.getString("NotificationUri", "android.resource://goo.TeaTimer/" + R.raw.big_ben);
+        	
 		CharSequence text = context.getText(R.string.Notification);
 		CharSequence textLatest = "Timer for " + setTimeStr;
 		
@@ -51,8 +53,9 @@ public class TimerReceiver extends BroadcastReceiver
         }
         
         // Play a sound!
-        if(play){
-			Uri uri = Uri.parse("android.resource://goo.TeaTimer/" + R.raw.big_ben);
+        if(notificationUri != ""){
+       
+			Uri uri = Uri.parse(notificationUri);
 	      	notification.sound = uri;
         }
         

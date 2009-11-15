@@ -5,12 +5,12 @@
 
     <PreferenceCategory android:title="Notification">
             
-        <CheckBoxPreference
-                android:key="PlaySound"
-                android:title="Notification Sound"
-                android:summary="Should the timer notification play a diddy."
-                android:defaultValue="True" />
-
+		<ListPreference
+				android:key="NotificationUri"
+				android:title="Notification Diddy"
+				android:summary="The notification's sound effects. "
+				/>
+				
         <CheckBoxPreference
                 android:key="Vibrate"
                 android:title="Notification Vibrate"
@@ -22,8 +22,15 @@
                 android:title="LED Notification"
                 android:summary="Blink the LED lights during the notification." 
                 android:defaultValue="True" />
-
         		
+    </PreferenceCategory>
+    
+    <PreferenceCategory android:title="Misc">
+             <CheckBoxPreference
+                android:key="NagSilent"
+                android:title="Nag Dialog"
+                android:summary="When the phone is set to silent show a nag dialog." 
+                android:defaultValue="True" />
     </PreferenceCategory>
                     
 </PreferenceScreen>
