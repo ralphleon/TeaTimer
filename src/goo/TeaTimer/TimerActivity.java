@@ -59,19 +59,23 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 {
 	/** All possible timer states */
 	private final static int RUNNING=0, STOPPED=1, PAUSED=2;
-		
+	
+	/** Should the logs be shown */
+	private final static boolean LOG = true;
+	
 	/** Menu item ids */
 	private final static int PREF=0,SOUND=1;
+	
 	/** Macros for our dialogs */
 	private final static int NUM_PICKER_DIALOG = 0, ALERT_DIALOG = 1, SOUND_DIALOG = 2;
 	/** debug string */
 	private final String TAG = getClass().getSimpleName();
 	
 	/** Update rate of the internal timer */
-	private final int TIMER_TIC = 500;
+	private final int TIMER_TIC = 100;
 	
 	/** The timer's current state */
-	private int mCurrentState = STOPPED;
+	private int mCurrentState = -1;
 	
 	/** The maximum time */
 	private int mLastTime = 0;
@@ -91,7 +95,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			if(msg.arg1 <= 0){
 				
 				if(mTimer != null){
-					Log.v(TAG,"rcvd a <0 msg = " + msg.arg1);
+					if(LOG) Log.v(TAG,"rcvd a <0 msg = " + msg.arg1);
 					
 					Context context = getApplicationContext();
 					CharSequence text = getResources().getText(R.string.Notification);
@@ -104,14 +108,18 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			}else{
 				mTime = msg.arg1;
 				
-				enterState(RUNNING);
+				//enterState(RUNNING);
 				onUpdateTime();
 			}
 		}
     };
 
-	private ImageButton mPauseButton;
-
+	/** To save having to traverse the view tree */
+	private ImageButton mPauseButton, mCancelButton;
+	private Button mSetButton;
+	private TimerAnimation mTimerAnimation;
+	private TextView mTimerLabel;
+	
 	private Bitmap mPlayBitmap,mPauseBitmap;
 
 	private AlarmManager mAlarmMgr;
@@ -131,21 +139,25 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-		ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelButton);
-        cancelButton.setOnClickListener(this);
+		mCancelButton = (ImageButton)findViewById(R.id.cancelButton);
+        mCancelButton.setOnClickListener(this);
         
-		Button setButton = (Button)findViewById(R.id.setButton);
-        setButton.setOnClickListener(this);
+		mSetButton = (Button)findViewById(R.id.setButton);
+        mSetButton.setOnClickListener(this);
        
         mPauseButton = (ImageButton)findViewById(R.id.pauseButton);
         mPauseButton.setOnClickListener(this);
-        
+ 
         mPauseBitmap = BitmapFactory.decodeResource(
         		getResources(), R.drawable.pause);
         
         mPlayBitmap = BitmapFactory.decodeResource(
         		getResources(), R.drawable.play);
    
+		mTimerLabel = (TextView)findViewById(R.id.label); 
+
+		mTimerAnimation = (TimerAnimation)findViewById(R.id.imageView);
+
         enterState(STOPPED);
       
         // Store some useful values
@@ -155,6 +167,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         clearTime();
     }
     
+
     /** { @inheritDoc} */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -165,6 +178,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     	return super.onCreateOptionsMenu(menu);
     }
     
+
     /** { @inheritDoc} */
 	@Override 
 	public boolean onOptionsItemSelected(MenuItem item) 
@@ -181,19 +195,18 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		return true;
 	}
     
+
 	/** { @inheritDoc} */
     @Override 
     public void onPause()
     {
     	super.onPause();
     	
-    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
-    
     	// Save our settings
         SharedPreferences.Editor editor = mSettings.edit();
         editor.putInt("LastTime", mLastTime);
         editor.putInt("CurrentTime",mTime);
-        editor.putInt("DrawingIndex",i.getIndex());
+        editor.putInt("DrawingIndex",mTimerAnimation.getIndex());
         editor.putInt("State", mCurrentState);
         
         switch(mCurrentState){
@@ -216,21 +229,18 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         editor.commit();
     }
    
+
     /** {@inheritDoc} */
     @Override 
     public void onResume()
     {
-    	Log.v(TAG,"Resumed!");
-    	
       	super.onResume();
-	    	
-    	TimerAnimation animation = (TimerAnimation)findViewById(R.id.imageView);
-    	
+	    		
     	// check the timestamp from the last update and start the timer.
     	// assumes the data has already been loaded?   
         mLastTime = mSettings.getInt("LastTime",0);    
         
-        animation.setIndex(mSettings.getInt("DrawingIndex",0));
+        mTimerAnimation.setIndex(mSettings.getInt("DrawingIndex",0));
         int state = mSettings.getInt("State",0);
         
         switch(state)
@@ -268,30 +278,28 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         	
         }
 	}
-    
+   
+ 
     /**
      * Updates the time 
      */
-	public void onUpdateTime()
-    {
-    	updateLabel(mTime);
+	public void onUpdateTime(){
 		
-    	TimerAnimation i = (TimerAnimation)findViewById(R.id.imageView);
-    	i.updateImage(mTime,mLastTime);  	
+    	updateLabel(mTime);
+    	mTimerAnimation.updateImage(mTime,mLastTime);  	
     }
+	
 	
     /**
      * Updates the text label with the given time
      * @param time in milliseconds
      */
-	public void updateLabel(int time)
-	{
-		TextView label = (TextView)findViewById(R.id.label); 
+	public void updateLabel(int time){
 		
 		String str = TimerUtils.time2str(time);
 		int size = TimerUtils.textSize(str);
-		label.setTextSize(size);
-		label.setText(str);
+		mTimerLabel.setTextSize(size);
+		mTimerLabel.setText(str);
 	}
 
 	
@@ -338,6 +346,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		return d;
 	}
 	
+	
 	/** {@inheritDoc} */
 	@Override
 	protected void onPrepareDialog(int id,Dialog d)
@@ -351,13 +360,12 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				
 				NNumberPickerDialog dialog = (NNumberPickerDialog)d;
 				dialog.setInitialValues(init);
-			}
-			
-			
+			}		
 		}
 		
 		super.onPrepareDialog(id, d);
 	}
+	
 	
 	/** 
 	 * Callback for the number picker dialog
@@ -384,55 +392,55 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		onTimerStart(mLastTime,true);
 	}
 
+
 	/** 
 	 * This only refers to the visual state of the application, used to manage
 	 * the view coming back into focus.
 	 * 
 	 * @param state the visual state that is being entered
 	 */
-	private void enterState(int state)
-	{
-		ImageButton pause = (ImageButton)findViewById(R.id.pauseButton);
-		ImageButton cancel = (ImageButton)findViewById(R.id.cancelButton);
-		Button set = (Button)findViewById(R.id.setButton);
+	private void enterState(int state){
 		
-		switch(state)
-		{
-			case RUNNING:
-			{
-				set.setVisibility(View.GONE);
-				cancel.setVisibility(View.VISIBLE);
-				pause.setVisibility(View.VISIBLE);
-				pause.setImageBitmap(mPauseBitmap);
-			}break;
-		
-			case STOPPED:
-			{	
-				pause.setVisibility(View.GONE);
-				cancel.setVisibility(View.GONE);
-				set.setVisibility(View.VISIBLE);	
-				clearTime();
-				
-			}break;
-		
-			case PAUSED:
-			{
-				set.setVisibility(View.GONE);
-				pause.setVisibility(View.VISIBLE);
-				cancel.setVisibility(View.VISIBLE);
-				pause.setImageBitmap(mPlayBitmap);
-			}break;	
-		}
+		if(mCurrentState != state){
 			
-		mCurrentState = state;
+			mCurrentState = state;		
+			if(LOG) Log.v(TAG,"Set current state = " + mCurrentState);
+			
+			switch(state)
+			{
+				case RUNNING:
+				{
+					mSetButton.setVisibility(View.GONE);
+					mCancelButton.setVisibility(View.VISIBLE);
+					mPauseButton.setVisibility(View.VISIBLE);
+					mPauseButton.setImageBitmap(mPauseBitmap);
+				}break;
+		
+				case STOPPED:
+				{	
+					mPauseButton.setVisibility(View.GONE);
+					mCancelButton.setVisibility(View.GONE);
+					mSetButton.setVisibility(View.VISIBLE);	
+					clearTime();
+				
+				}break;
+		
+				case PAUSED:
+				{
+					mSetButton.setVisibility(View.GONE);
+					mPauseButton.setVisibility(View.VISIBLE);
+					mCancelButton.setVisibility(View.VISIBLE);
+					mPauseButton.setImageBitmap(mPlayBitmap);
+				}break;	
+			}
+		}
 	}
 	
 	/**
 	 * Cancels the alarm portion of the timer
 	 */
-	private void stopAlarmTimer()
-	{
-		Log.v(TAG,"Stopping the alarm timer ...");		
+	private void stopAlarmTimer(){
+		if(LOG) Log.v(TAG,"Stopping the alarm timer ...");		
 		mAlarmMgr.cancel(mPendingIntent);
 	}
 	
@@ -441,7 +449,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	 */
 	private void onTimerStop()
 	{
-		Log.v(TAG,"Timer stopped");
+		if(LOG) Log.v(TAG,"Timer stopped");
 		
 		// Stop our timer service
 		enterState(STOPPED);		
@@ -459,13 +467,13 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	 */
 	private void onTimerStart(int time,boolean service)
 	{
-		Log.v(TAG,"Starting the timer...");
+		if(LOG) Log.v(TAG,"Starting the timer...");
 		
 		// Star external service
 		enterState(RUNNING);
 		
 		if(service){
-		    Log.v(TAG,"Starting the timer service ...");
+		    if(LOG) Log.v(TAG,"Starting the timer service ...");
 		    Intent intent = new Intent( getApplicationContext(), TimerReceiver.class);
 		    intent.putExtra("SetTime",mLastTime);
 		    mPendingIntent = PendingIntent.getBroadcast( getApplicationContext(), 0 , intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -475,8 +483,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		// Internal thread to properly update the GUI
 		mTimer = new Timer();	
 		mTime = time;
-		mTimer.scheduleAtFixedRate( new TimerTask() 
-			{
+		mTimer.scheduleAtFixedRate( new TimerTask(){
 	        	public void run() {
 	          		onTimerTic();
 	        	}
@@ -488,6 +495,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	/** Resume the time after being paused */
 	private void resumeTimer() 
 	{
+		Log.v(TAG,"Resuming the timer...");
+			
 		onTimerStart(mTime,true);
 		enterState(RUNNING);
 	}
@@ -495,6 +504,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	/** Pause the timer and stop the timer service */
 	private void pauseTimer()
 	{
+		Log.v(TAG,"Pausing the timer...");
+		
 		mTimer.cancel();
 		mTimer = null;
 		

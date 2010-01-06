@@ -36,28 +36,30 @@ class Teapot implements TimerAnimation.TimerDrawing
 
 		mBitmap = Bitmap.createBitmap(mWidth,mHeight,Bitmap.Config.ARGB_8888);
 	}
-	
+
 	/**
 	 * Updates the image to be in sync with the current time
 	 * @param time in milliseconds
 	 * @param max the original time set in milliseconds
 	 */
-	public Bitmap updateImage(int time,int max)
-	{	
-		mBitmap.eraseColor(Color.TRANSPARENT);
+	public void updateImage(Canvas canvas, int time, int max) {
+	
+		canvas.save();
+		float w = canvas.getClipBounds().width();
+		float h = canvas.getClipBounds().height();
 		
-		Canvas canvas = new Canvas(mBitmap);
+		canvas.translate(w/2.0f - mWidth/2.0f,
+						 h/2.0f - mHeight/2.0f);
+		
 		canvas.drawBitmap(mCupBitmap, 0, 0,null);
 		
 		float p = (max != 0) ? (time/(float)max) : 0;
 		
 		if(p == 0) p = 1;
 		
-		Log.v("Ba","m: " + max + " t " + time + " p " + p);
-		
 		RectF fill = new RectF(0,mHeight*(p),mWidth,mHeight);
-		canvas.drawRect(fill,mProgressPaint);
+		canvas.drawRect(fill,mProgressPaint);	
 		
-		return mBitmap;	
+		canvas.restore();
 	}
 }

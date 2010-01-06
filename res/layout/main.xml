@@ -4,6 +4,7 @@
     android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
     >
+    
 <LinearLayout 
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -61,26 +62,17 @@
 
 </LinearLayout>
 
-<RelativeLayout
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:paddingLeft="18px"
-	android:paddingRight="10px"
-	android:paddingTop="5px"
-	android:paddingBottom="5px"
->
-
 <goo.TeaTimer.Animation.TimerAnimation
 	android:id="@+id/imageView"
+	android:paddingTop="20px"
+	android:paddingLeft="30px"
+	android:paddingRight="30px"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:gravity="center"
 	android:adjustViewBounds="true"
 	android:scaleType="center" 
-	android:paddingTop="10px"
 />
-
-</RelativeLayout>	
 
 </LinearLayout>
 

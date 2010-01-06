@@ -17,8 +17,7 @@ public class TimerReceiver extends BroadcastReceiver
 	
 	@Override
 	public void onReceive(Context context, Intent pintent) 
-	{
-		
+	{	
 		Log.v(TAG,"Showing notification...");
 		
 		int setTime = pintent.getIntExtra("SetTime",0);
@@ -49,15 +48,16 @@ public class TimerReceiver extends BroadcastReceiver
 	        notification.ledARGB = 0xff00ff00;
 	        notification.ledOnMS = 300;
 	        notification.ledOffMS = 1000;
-	        notification.flags |= Notification.FLAG_SHOW_LIGHTS |  Notification.FLAG_AUTO_CANCEL;
+	        notification.flags |= Notification.FLAG_SHOW_LIGHTS;
         }
         
         // Play a sound!
         if(notificationUri != ""){
-       
 			Uri uri = Uri.parse(notificationUri);
 	      	notification.sound = uri;
         }
+        
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         
       	Intent intent = new Intent(context,TimerActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context,  0,intent, Intent.FLAG_ACTIVITY_NEW_TASK);

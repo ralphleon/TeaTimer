@@ -24,19 +24,18 @@ public class TimerAnimation extends View implements OnClickListener
 	
 	Context mContext;
 	
-	public interface TimerDrawing
-	{
+	public interface TimerDrawing{
+		
 		/**
 		 * Updates the image to be in sync with the current time
 		 * @param time in milliseconds
 		 * @param max the original time set in milliseconds
 		 */
-		public Bitmap updateImage(int time,int max);
-		//public void draw(Canvas canvas);
+		public void updateImage( Canvas canvas, int time,int max);
 	}
 	
-	public TimerAnimation(Context context, AttributeSet attrs)
-	{
+	public TimerAnimation(Context context, AttributeSet attrs){
+		
 		super(context, attrs);
 		
 		Resources r = getResources();
@@ -50,8 +49,7 @@ public class TimerAnimation extends View implements OnClickListener
 		setOnClickListener(this);
 	}
 
-	public void setIndex(int i)
-	{
+	public void setIndex(int i){
 		if(i >= mDrawings.size()) i = 0;
 		mIndex = i;
 		invalidate();
@@ -59,8 +57,7 @@ public class TimerAnimation extends View implements OnClickListener
 	
 	public int getIndex(){ return mIndex;}
 	
-	public void updateImage(int time,int max)
-	{
+	public void updateImage(int time,int max){
 		mLastTime = time;
 		mLastMax = max;
 		
@@ -68,18 +65,12 @@ public class TimerAnimation extends View implements OnClickListener
 	}
 
 	@Override
-	public void onDraw(Canvas canvas)
-	{
-		// TODO eventually moving this to a view framework
-		
-		Bitmap mBitmap = mDrawings.get(mIndex).updateImage(mLastTime,mLastMax);
-		
-		canvas.drawBitmap(	mBitmap,getWidth()/2 - mBitmap.getWidth()/2,
-							getHeight()/2 - mBitmap.getHeight()/2,null);
+	public void onDraw(Canvas canvas){
+		mDrawings.get(mIndex).updateImage(canvas, mLastTime, mLastMax);
 	}
 	
-	public void onClick(View v) 
-	{	
+	public void onClick(View v){
+			
 		startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_out));
 		
 		mIndex++;

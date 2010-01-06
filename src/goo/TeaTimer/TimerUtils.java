@@ -33,6 +33,10 @@ public class TimerUtils {
 		}
 	}
  
+	/** Creates a time vector
+	 *  @param ms the time in milliseconds
+	 *  @return [hour,minutes,seconds,ms]
+	 */
 	public static int [] time2Mhs(int time)
 	{
 		int ms = time % 1000;

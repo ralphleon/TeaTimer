@@ -1,16 +1,21 @@
 package goo.TeaTimer.Animation;
 
-import goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
-
 import goo.TeaTimer.R;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+/**
+ * Sample timer animation.
+ * The trash cup naming comes from the fact that the cup reminds my friends
+ * of a "trash can"
+ * 
+ * @author Ralph Gootee (rgootee@gmail.com)
+ *
+ */
 class TrashCupAnimation implements TimerAnimation.TimerDrawing
 {
 	// buffer 
@@ -49,24 +54,28 @@ class TrashCupAnimation implements TimerAnimation.TimerDrawing
 	 * @param time in milliseconds
 	 * @param max the original time set in milliseconds
 	 */
-	public Bitmap updateImage(int time,int max)
-	{	
-		Bitmap bitmap = Bitmap.createBitmap(mWidth,mHeight,Bitmap.Config.RGB_565);
-		Canvas canvas = new Canvas(bitmap);
-		
+	public void updateImage(Canvas canvas, int time, int max) {
+	
 		float p = (max == 0) ? 0 : (time/(float)max);
 		
+		canvas.save();
+		
+		float w = canvas.getClipBounds().width();
+		float h = canvas.getClipBounds().height();
+				
+		canvas.translate(w/2.0f - mWidth/2.0f,
+						 h/2.0f - mHeight/2.0f);
+
 		// Define the drawing rects
-		mTeaRect.set(0,(mHeight-TOP_BUFFER)*p+BOTTOM_BUFFER,mWidth,mHeight+BOTTOM_BUFFER);
+		mTeaRect.set(0,(mHeight)*p,mWidth,mHeight);
 		
 		// Unused part of the cup
-		canvas.drawPaint(mBgPaint);
+		canvas.drawRect(mTeaRect,mBgPaint);
 		
 		// The filled part of the cup
 		canvas.drawRect(mTeaRect,mProgressPaint);
 		canvas.drawBitmap(mCupBitmap, 0, 0, null);
 		
-		// Switch out the bitmap
-		return bitmap;	
+		canvas.restore();
 	}
 }

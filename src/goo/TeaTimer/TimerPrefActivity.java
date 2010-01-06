@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
+import android.util.Log;
 
-public class TimerPrefActivity extends PreferenceActivity {
-
+public class TimerPrefActivity extends PreferenceActivity 
+{
+	private static final String TAG = TimerPrefActivity.class.getSimpleName();
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +55,8 @@ public class TimerPrefActivity extends PreferenceActivity {
     	CharSequence [] entries = {"No Sound","Big Ben"};
     	CharSequence [] entryValues = {"","android.resource://goo.TeaTimer/" + R.raw.big_ben};
     	
-    	tone.setDefaultValue(entryValues[1]);
+    	//Default value
+    	if(tone.getValue() == null) tone.setValue((String)entryValues[1]);
     	
     	if( items != null && items.length > 0){
     		tone.setEntries(concat(entries,items));

@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<color name="tea_fill">#c9ea91</color>
-<color name="tea_bg">#101010</color>
-<color name="dark_gray">#3C3C3C</color>
-<color name="light_gray">#5A5A5A</color>
+	<color name="tea_bg">#101010</color>
+	<color name="dark_gray">#3C3C3C</color>
+	<color name="light_gray">#5A5A5A</color>
+
+	<color name="theme1">#1E181E</color>
+	<color name="theme2">#303730</color>
+	<color name="theme3">#C3992E</color>
+	<color name="theme4">#E6C346</color>
+	<color name="theme5">#FFE978</color>
+
 </resources>
 
