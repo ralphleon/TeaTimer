@@ -1,6 +1,7 @@
 package goo.TeaTimer.Animation;
 
 import goo.TeaTimer.R;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +11,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.PorterDuff.Mode;
-import android.util.Log;
 
 class Teapot implements TimerAnimation.TimerDrawing
 {	
@@ -23,8 +23,10 @@ class Teapot implements TimerAnimation.TimerDrawing
 
 	private Bitmap mBitmap = null;
 
-	public Teapot(Resources resources)
+	public Teapot(Context context)
 	{
+		Resources resources = context.getResources();
+		
 		mProgressPaint = new Paint();
 		mProgressPaint.setColor(Color.GRAY);
 		mProgressPaint.setAlpha(135);
@@ -61,5 +63,10 @@ class Teapot implements TimerAnimation.TimerDrawing
 		canvas.drawRect(fill,mProgressPaint);	
 		
 		canvas.restore();
+	}
+
+	public void configure() {
+		// TODO Auto-generated method stub
+		
 	}
 }

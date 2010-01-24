@@ -5,16 +5,17 @@ import goo.TeaTimer.R;
 import java.util.Vector;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
-public class TimerAnimation extends View implements OnClickListener
+public class TimerAnimation extends View implements OnClickListener, OnSharedPreferenceChangeListener
 {		
 	Vector<TimerDrawing> mDrawings = null;
 	int mIndex = 0;
@@ -32,19 +33,22 @@ public class TimerAnimation extends View implements OnClickListener
 		 * @param max the original time set in milliseconds
 		 */
 		public void updateImage( Canvas canvas, int time,int max);
+		
+		public void configure();
 	}
 	
 	public TimerAnimation(Context context, AttributeSet attrs){
 		
 		super(context, attrs);
-		
-		Resources r = getResources();
 		mContext = context;
 		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+		prefs.registerOnSharedPreferenceChangeListener(this);
+				
 		mDrawings = new Vector<TimerDrawing>();
-		mDrawings.add(new CircleAnimation(r));
-		mDrawings.add(new TrashCupAnimation(r));
-		mDrawings.add(new Teapot(r));
+		mDrawings.add(new CircleAnimation(context));
+		//mDrawings.add(new TrashCupAnimation(context));
+		mDrawings.add(new Teapot(context));
 		
 		setOnClickListener(this);
 	}
@@ -81,5 +85,17 @@ public class TimerAnimation extends View implements OnClickListener
 		invalidate();
 	}
 	
+	public void onSharedPreferenceChanged(
+			SharedPreferences sharedPreferences, String key) {
+		
+		if(key.equals("Theme")){	
+			for(TimerDrawing drawing : mDrawings)
+			{
+				drawing.configure();
+			}
+		}	
+		invalidate();
+	}
+
 	
 }

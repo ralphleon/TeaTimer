@@ -78,4 +78,9 @@ class TrashCupAnimation implements TimerAnimation.TimerDrawing
 		
 		canvas.restore();
 	}
+
+	public void configure() {
+		// TODO Auto-generated method stub
+		
+	}
 }

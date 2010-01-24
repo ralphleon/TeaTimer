@@ -25,12 +25,31 @@
         		
     </PreferenceCategory>
     
+    <PreferenceCategory android:title="Visual">
+    
+	    <ListPreference
+			android:title="Color Theme"
+			android:summary="Select the theme for the visualization"
+			android:key="Theme"
+			android:entries="@array/themes"
+			android:entryValues="@array/themeValues" />
+			
+    </PreferenceCategory>
+    
+    
     <PreferenceCategory android:title="Misc">
              <CheckBoxPreference
                 android:key="NagSilent"
                 android:title="Nag Dialog"
                 android:summary="When the phone is set to silent show a nag dialog." 
                 android:defaultValue="True" />
+             <CheckBoxPreference
+                android:key="WakeLock"
+                android:title="Don't Sleep"
+                android:summary="Don't allow the phone to go to sleep." 
+                android:defaultValue="False" />
     </PreferenceCategory>
+    
+ 
                     
 </PreferenceScreen>

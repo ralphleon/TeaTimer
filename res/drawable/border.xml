@@ -9,12 +9,12 @@
             android:right="7dp" android:bottom="7dp" /> 
     <corners android:radius="8dp" /> 
     
-     <gradient
+    <gradient
      			android:height="100px"
      			android:dither="true"
-     			android:thickness="5px"
+     			android:thickness="4px"
      			android:antialias="true"
-                android:startColor="#FF333333"
-                android:endColor="#00FFFFFF"
+                android:startColor="#FF2F2F2F"
+                android:endColor="#00111111"
                 android:angle="270"/>
 </shape> 

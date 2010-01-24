@@ -26,21 +26,16 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,10 +59,10 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	private final static boolean LOG = true;
 	
 	/** Menu item ids */
-	private final static int PREF=0,SOUND=1;
+	private final static int PREF=0;
 	
 	/** Macros for our dialogs */
-	private final static int NUM_PICKER_DIALOG = 0, ALERT_DIALOG = 1, SOUND_DIALOG = 2;
+	private final static int NUM_PICKER_DIALOG = 0, ALERT_DIALOG = 1;
 	/** debug string */
 	private final String TAG = getClass().getSimpleName();
 	
@@ -92,6 +87,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		@Override
         public void handleMessage(Message msg) {
 			
+			// The timer is finished
 			if(msg.arg1 <= 0){
 				
 				if(mTimer != null){
@@ -105,6 +101,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 					enterState(STOPPED);		
 					mTimer.cancel();
 				}
+				
+			// Update the time
 			}else{
 				mTime = msg.arg1;
 				
@@ -164,7 +162,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         mSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mAlarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         mAudioMgr = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        clearTime();
     }
     
 
@@ -453,7 +450,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		
 		// Stop our timer service
 		enterState(STOPPED);		
-		
 		stopAlarmTimer();
 		
 		// Stop our local timer
