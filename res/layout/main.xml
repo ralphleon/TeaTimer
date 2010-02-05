@@ -59,14 +59,11 @@
 			android:drawableLeft="@drawable/set"
 			/>
 	</LinearLayout>
-
 </LinearLayout>
 
 <goo.TeaTimer.Animation.TimerAnimation
 	android:id="@+id/imageView"
-	android:paddingTop="20px"
-	android:paddingLeft="30px"
-	android:paddingRight="30px"
+	android:layout_margin="20px"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:gravity="center"

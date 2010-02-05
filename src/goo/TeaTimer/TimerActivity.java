@@ -34,6 +34,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -97,9 +98,9 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 					CharSequence text = getResources().getText(R.string.Notification);
 					Toast.makeText(context, text,Toast.LENGTH_SHORT).show();
 					
-					clearTime();
-					enterState(STOPPED);		
-					mTimer.cancel();
+					timerStop();
+
+					
 				}
 				
 			// Update the time
@@ -169,7 +170,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-    	MenuItem item = menu.add(0, PREF, 0, "Preferences");
+    	MenuItem item = menu.add(0, PREF, 0, getResources().getString(R.string.prefs));
     	item.setIcon(android.R.drawable.ic_menu_preferences);
     	
     	return super.onCreateOptionsMenu(menu);
@@ -252,7 +253,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
             	// We still have a timer running!
             	if(then.after(now)){
             		int delta = (int)(then.getTime() - now.getTime());		
-            		onTimerStart(delta,false);
+            		timerStart(delta,false);
             		mCurrentState = RUNNING;
             	// All finished
             	}else{
@@ -316,8 +317,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				int [] start = {0,0,0};
 				int [] end = {23,59,59};
 				String [] sep = {":",".",""};
-				
-				Log.v("Tea","create: " + init[0] +","+init[1]+","+init[2]);
 				
 				NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
 														NumberPicker.TWO_DIGIT_FORMATTER,
@@ -386,7 +385,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			showDialog(ALERT_DIALOG);
 		}
 		
-		onTimerStart(mLastTime,true);
+		timerStart(mLastTime,true);
 	}
 
 
@@ -444,16 +443,19 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	/**
 	 * Stops the timer
 	 */
-	private void onTimerStop()
-	{
+	private void timerStop()
+	{		
 		if(LOG) Log.v(TAG,"Timer stopped");
+		
+		clearTime();
 		
 		// Stop our timer service
 		enterState(STOPPED);		
-		stopAlarmTimer();
-		
-		// Stop our local timer
 		mTimer.cancel();
+		
+		// Remove the wakelock
+		//PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		//pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "My Tag");
 	}
 	
 	/**
@@ -461,7 +463,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	 * @param time with which to count down
 	 * @param service whether or not to start the service as well
 	 */
-	private void onTimerStart(int time,boolean service)
+	private void timerStart(int time,boolean service)
 	{
 		if(LOG) Log.v(TAG,"Starting the timer...");
 		
@@ -481,7 +483,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		mTime = time;
 		mTimer.scheduleAtFixedRate( new TimerTask(){
 	        	public void run() {
-	          		onTimerTic();
+	          		timerTic();
 	        	}
 	      	},
 	      	0,
@@ -491,16 +493,16 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	/** Resume the time after being paused */
 	private void resumeTimer() 
 	{
-		Log.v(TAG,"Resuming the timer...");
+		if(LOG) Log.v(TAG,"Resuming the timer...");
 			
-		onTimerStart(mTime,true);
+		timerStart(mTime,true);
 		enterState(RUNNING);
 	}
 	
 	/** Pause the timer and stop the timer service */
 	private void pauseTimer()
 	{
-		Log.v(TAG,"Pausing the timer...");
+		if(LOG) Log.v(TAG,"Pausing the timer...");
 		
 		mTimer.cancel();
 		mTimer = null;
@@ -511,7 +513,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	}
 
 	/** Called whenever the internal timer is updated */
-	protected void onTimerTic() 
+	protected void timerTic() 
 	{
 		mTime -= TIMER_TIC;
 		
@@ -553,9 +555,12 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			
 			case R.id.cancelButton:
 			{
+				// We need to be careful to not cancel timers
+				// that are not running (e.g. if we're paused)
 				switch(mCurrentState){
 					case RUNNING:
-						onTimerStop();
+						timerStop();
+						stopAlarmTimer();
 						break;
 					case PAUSED:
 						clearTime();

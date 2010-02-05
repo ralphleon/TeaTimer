@@ -9,20 +9,27 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.preference.PreferenceManager;
 
 class CircleAnimation implements TimerAnimation.TimerDrawing
 {
+	private static final float MAX_SIZE = 120;
+
 	private final int START_ANGLE = 270;
 	
-	private int mRadius = 75,mInnerRadius=30,mSecondRadius=90,mMsRadius=mSecondRadius+5;
-	private final int mTickerRadius = mSecondRadius + 10;
+	private float mRadius = 75,mInnerRadius=30,mSecondRadius=90,mMsRadius=mSecondRadius+5;
 	
 	private Paint mCirclePaint,mInnerPaint,mArcPaint,mMsPaint,mTickerPaint;
 	
+	RadialGradient mInnerGradient;
+	
 	/** Paint for the seconds arc */
 	private Paint mSecondPaint, mSecondBgPaint;
+	
+	int mInnerColor = 0;
 	
 	private boolean showMs = false;
 	boolean mMsFlipper = false;
@@ -32,6 +39,14 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	private RectF mArcRect,mSecondRect,mMsRect;
 
 	private Context mContext;
+
+	private int mWidth;
+
+	private int mHeight;
+
+	private float mSecondGap;
+
+	private float mMsGap;
 	
 	public CircleAnimation(Context context)
 	{
@@ -103,29 +118,44 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		mMsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mMsPaint.setColor(colors[4]);
 		
-		int end = colors[2];
+		mInnerColor = colors[2];
+	
+		mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mArcPaint.setStyle(Paint.Style.FILL);
 		
-		int offset = 50;
+		mTickerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mTickerPaint.setColor(0xFFFFFFFF);
 		
-		int r = Color.red(end) - offset;
-		int g = Color.green(end) - offset;
-		int b = Color.blue(end) - offset;
+		
+		if(mWidth != 0 && mHeight != 0) sizeChange(mWidth,mHeight);
+	}
+	
+	public void sizeChange(int w, int h){
+			
+		mWidth = w;
+		mHeight = h;
+		
+		mMsRadius = Math.min(Math.min(w/2.0f,h/2.0f),MAX_SIZE);
+		mMsGap = mMsRadius * .95f;
+		mSecondRadius = mMsRadius * .97f;
+		mSecondGap = mMsRadius *.85f;
+		mRadius = mMsRadius * .85f;
+		mInnerRadius=30;
+		
+		int offset = 75;
+		
+		int r = Color.red(mInnerColor) - offset;
+		int g = Color.green(mInnerColor) - offset;
+		int b = Color.blue(mInnerColor) - offset;
 		
 		int start = Color.rgb(r, g, b);
 		
-		/*RadialGradient gradient = new RadialGradient(	WIDTH/2.0f, HEIGHT/2.0f, mRadius, 
-														start, 										
-														end, 
-														Shader.TileMode.CLAMP);
-		*/
-		mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mArcPaint.setStyle(Paint.Style.FILL);
-		mArcPaint.setColor(end);
-			
-		mTickerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mTickerPaint.setColor(0xFFFFFFFF);
+		Shader shader = new RadialGradient(0, 0, 	mRadius, 
+													start, 										
+													mInnerColor, 
+													Shader.TileMode.CLAMP);
+		mArcPaint.setShader(shader);
 	}
-	
 	
 	/**
 	 * Updates the image to be in sync with the current time
@@ -134,6 +164,8 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	 */
 	public void updateImage(Canvas canvas, int time, int max) {
 	
+		canvas.save();
+		
 		float p = (max == 0) ? 0 : (time/(float)max);
 		int [] timeVec = TimerUtils.time2Mhs(time);
 		if(mLastTime == null) mLastTime = timeVec;
@@ -142,41 +174,50 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		float pSecond = (max == 0) ? 1 : (timeVec[2] + timeVec[3]/1000.0f )/60.0f; 		
 		float thetaSecond = pSecond*360;
 		
-		float w2 =  canvas.getClipBounds().width()/2.0f;
-		float h2 = canvas.getClipBounds().height()/2.0f;
 		
-		mSecondRect.set(w2-mSecondRadius, h2-mSecondRadius, w2+mSecondRadius, h2+mSecondRadius);
-		mArcRect.set(w2-mRadius, h2-mRadius, w2+mRadius, h2+mRadius);
+		if(mWidth != canvas.getClipBounds().width() || mHeight != canvas.getClipBounds().height())
+			sizeChange(canvas.getClipBounds().width(),canvas.getClipBounds().height());
+	
+		canvas.translate(mWidth/2.0f, mHeight/2.0f);
 		
+		mSecondRect.set(-mSecondRadius, -mSecondRadius, mSecondRadius, mSecondRadius);
+		mArcRect.set(-mRadius, -mRadius, mRadius, mRadius);
+			
 		// Ms Arc
 		if(showMs){
 			float pMs = (float)((timeVec[3]/1000.00));
 			float thetaMs = pMs*360;
 
-			mMsRect.set(w2-mMsRadius, h2-mMsRadius, w2+mMsRadius, h2+mMsRadius);		
-			canvas.drawCircle(w2,h2,mMsRadius, (mMsFlipper) ? mCirclePaint : mMsPaint );
+			mMsRect.set(-mMsRadius, -mMsRadius, mMsRadius, mMsRadius);		
+			canvas.drawCircle(0,0,mMsRadius, (mMsFlipper) ? mCirclePaint : mMsPaint );
 			canvas.drawArc(mMsRect, START_ANGLE, thetaMs, true, (mMsFlipper) ? mMsPaint: mCirclePaint);
 		}
-		
+		// We want to draw a very thin border
+		else{
+			canvas.drawCircle(0,0,mMsRadius, mMsPaint );
+		}
+	
+		// Gap between the ms and seconds
+		canvas.drawCircle(0,0,mMsGap,mInnerPaint);
+				
 		//Second arc
-		canvas.drawCircle(w2,h2,mSecondRadius,mSecondBgPaint);
+		canvas.drawCircle(0,0,mSecondRadius,mSecondBgPaint);
 		canvas.drawArc(mSecondRect, START_ANGLE, thetaSecond, true, mSecondPaint);
 		
-		// My line
-		/*canvas.drawLine(	w2,h2,
-							w2+(float)(mTickerRadius*Math.cos(thetaSecond)),
-							h2+(float)(mTickerRadius*Math.sin(thetaSecond)),
-							mTickerPaint);*/
+		// Gap between the seconds and the inner radius
+		canvas.drawCircle(0,0,mSecondGap,mInnerPaint);
 		
 		// Background fill
-		canvas.drawCircle(w2,h2,mRadius,mCirclePaint);
-				
+		canvas.drawCircle(0,0,mRadius,mCirclePaint);
+		
 		// Main arc
 		canvas.drawArc(mArcRect,START_ANGLE,360*(1-p),true,mArcPaint);
 		
 		// Inner paint
-		canvas.drawCircle(w2,h2,mInnerRadius,mInnerPaint);
+		canvas.drawCircle(0,0,mInnerRadius,mInnerPaint);
 		
 		mLastTime = timeVec;
+		
+		canvas.restore();
 	}
 }

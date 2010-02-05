@@ -2,8 +2,8 @@
 <resources> 
 	<array name="themes"> 
         <item>Original Green</item> 
-        <item>Purple and Teal</item> 
-        <item>Really Bright</item> 
+        <item>Bright Yellow</item> 
+        <item>Sky</item> 
     </array>
      
     <array name="themeValues"> 

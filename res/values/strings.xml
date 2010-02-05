@@ -7,7 +7,17 @@
 	<string name="Notification">Tea time!</string>
 	<string name="InputTitle">Hour:Min.Sec</string>
 
-<string name="warning_text">The phone is in silent mode! Notification vibration and sound will be supressed.</string>
-<string name="warning_title">Warning</string>
-<string name="warning_button">Ok</string>
+	<string name="warning_text">The phone is in silent mode! Notification vibration and sound will be supressed.</string>
+	<string name="warning_title">Warning</string>
+	<string name="warning_button">Ok</string>
+	
+	<string name="prefs">Preferences</string>
+	
+	<!-- Preferences -->
+	<string name="notification">Notification</string>
+	<string name="notification_sound">Notification Diddy</string>
+	<string name="notification_sound_desc">The notification's sound effects.</string>
+	
 </resources>
+
+
