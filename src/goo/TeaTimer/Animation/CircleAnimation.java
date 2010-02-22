@@ -16,7 +16,7 @@ import android.preference.PreferenceManager;
 
 class CircleAnimation implements TimerAnimation.TimerDrawing
 {
-	private static final float MAX_SIZE = 120;
+	private static final float MAX_SIZE = 100;
 
 	private final int START_ANGLE = 270;
 	

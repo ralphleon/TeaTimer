@@ -53,8 +53,12 @@ public class TimerAnimation extends View implements OnClickListener, OnSharedPre
 		setOnClickListener(this);
 	}
 
+	/**
+	 * TODO eventually we'll want to move this index into the preferences
+	 * @param i
+	 */
 	public void setIndex(int i){
-		if(i >= mDrawings.size()) i = 0;
+		if(i < 0 || i >= mDrawings.size()) i = 0;
 		mIndex = i;
 		invalidate();
 	}
@@ -85,8 +89,7 @@ public class TimerAnimation extends View implements OnClickListener, OnSharedPre
 		invalidate();
 	}
 	
-	public void onSharedPreferenceChanged(
-			SharedPreferences sharedPreferences, String key) {
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		
 		if(key.equals("Theme")){	
 			for(TimerDrawing drawing : mDrawings)

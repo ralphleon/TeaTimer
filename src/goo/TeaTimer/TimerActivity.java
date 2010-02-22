@@ -12,6 +12,7 @@
 package goo.TeaTimer;
 
 import goo.TeaTimer.Animation.TimerAnimation;
+import goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
 import goo.TeaTimer.widget.NNumberPickerDialog;
 import goo.TeaTimer.widget.NumberPicker;
 import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
@@ -28,6 +29,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -36,6 +38,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -51,7 +54,7 @@ import android.widget.Toast;
  * The main activity which shows the timer and allows the user to set the time
  * @author Ralph Gootee (rgootee@gmail.com)
  */
-public class TimerActivity extends Activity implements OnClickListener,OnNNumberPickedListener
+public class TimerActivity extends Activity implements OnClickListener,OnNNumberPickedListener,OnSharedPreferenceChangeListener
 {
 	/** All possible timer states */
 	private final static int RUNNING=0, STOPPED=1, PAUSED=2;
@@ -128,6 +131,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	private AudioManager mAudioMgr;
 
 	private SharedPreferences mSettings;
+
+	private WakeLock mWakeLock;
     
 	/** Called when the activity is first created.
      *	{ @inheritDoc} 
@@ -163,6 +168,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         mSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mAlarmMgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         mAudioMgr = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        
+		mSettings.registerOnSharedPreferenceChangeListener(this);
     }
     
 
@@ -171,8 +178,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	MenuItem item = menu.add(0, PREF, 0, getResources().getString(R.string.prefs));
-    	item.setIcon(android.R.drawable.ic_menu_preferences);
-    	
+    	item.setIcon(android.R.drawable.ic_menu_preferences);   	
     	return super.onCreateOptionsMenu(menu);
     }
     
@@ -188,8 +194,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				break;
 			default:
 				return false;
-		}
-		
+		}		
 		return true;
 	}
     
@@ -225,6 +230,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         }
         
         editor.commit();
+        
+        releaseWakeLock();
     }
    
 
@@ -244,7 +251,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
         switch(state)
         {
         	case RUNNING:
-        	{
         		long timeStamp = mSettings.getLong("TimeStamp", -1);
                 
         		Date now = new Date();
@@ -260,20 +266,17 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
             		clearTime();
             		enterState(STOPPED);
             	}
-        	}break;
+            	break;
         	
         	case STOPPED:
-        	{
         		enterState(STOPPED);
-        	}break;
+        		break;
         	
         	case PAUSED:
-        	{
         		mTime = mSettings.getInt("CurrentTime",0);
         		onUpdateTime();
         		enterState(PAUSED);
-        	}break;
-        	
+        		break;  	
         }
 	}
    
@@ -453,9 +456,34 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		enterState(STOPPED);		
 		mTimer.cancel();
 		
+		releaseWakeLock();
+	}
+	
+	private void releaseWakeLock(){
 		// Remove the wakelock
-		//PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		//pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "My Tag");
+		if(mWakeLock != null && mWakeLock.isHeld()) {
+			if(LOG) Log.v(TAG,"Releasing wake lock...");
+			mWakeLock.release();
+			mWakeLock = null;
+		}
+	}
+	/**
+	 * Only aquires the wake lock _if_ it is set in the settings. 
+	 */
+	private void aquireWakeLock(){
+		// We're going to start a wakelock
+		if(mSettings.getBoolean("WakeLock", false)){
+			if(LOG) Log.v(TAG,"Issuing a wakelock...");
+			
+			PowerManager pm = (PowerManager)getSystemService(POWER_SERVICE);
+			if(mWakeLock != null) Log.e(TAG,"There's already a wakelock... Shouldn't be there!");
+			
+			mWakeLock= pm.newWakeLock(
+				PowerManager.SCREEN_DIM_WAKE_LOCK
+	            | PowerManager.ON_AFTER_RELEASE,
+	            TAG);
+			mWakeLock.acquire();
+		}		
 	}
 	
 	/**
@@ -488,6 +516,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	      	},
 	      	0,
 	      	TIMER_TIC);
+		
+		aquireWakeLock();
 	}
 	
 	/** Resume the time after being paused */
@@ -568,6 +598,18 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 						break;
 				}	
 			}break;
+		}
+	}
+	
+	/** 
+	 * Mostly used for the wakelock currently -- should be used for the visual components eventually
+	 */
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		
+		// We need to check if the 
+		if(key == "WakeLock"){
+			if(mSettings.getBoolean("WakeLock", false)) aquireWakeLock();
+			else releaseWakeLock();
 		}
 	}
 		

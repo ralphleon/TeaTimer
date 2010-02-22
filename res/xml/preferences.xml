@@ -45,7 +45,7 @@
                 android:defaultValue="True" />
              <CheckBoxPreference
                 android:key="WakeLock"
-                android:title="Don't Sleep"
+                android:title="Stay Awake"
                 android:summary="Don't allow the phone to go to sleep." 
                 android:defaultValue="False" />
     </PreferenceCategory>
