@@ -11,13 +11,34 @@
 	<string name="warning_title">Warning</string>
 	<string name="warning_button">Ok</string>
 	
+	<string name="timer_for">Timer for </string>
+	
 	<string name="prefs">Preferences</string>
 	
 	<!-- Preferences -->
 	<string name="notification">Notification</string>
 	<string name="notification_sound">Notification Diddy</string>
-	<string name="notification_sound_desc">The notification's sound effects.</string>
+	<string name="notification_sound_desc">The notification\'s sound effects.</string>
 	
+	<string name="notification_vibrate">Notification Vibrate</string>
+	<string name="notification_vibrate_desc">Should the timer notification Vibrate.</string>
+	
+	<string name="led_Notification">LED Notification</string>
+	<string name="led_Notification_desc">Blink the LED lights during the notification.</string>
+	
+	<string name="visual">Visuel</string>
+	
+	<string name="color_theme">Color Theme</string>
+	<string name="color_theme_desc">Select the theme for the visualization</string>
+	
+	<string name="misc">Misc</string>
+	
+	<string name="nag_dialog">Nag Dialog</string>
+	<string name="nag_dialog_desc">When the phone is set to silent show a nag dialog.</string>
+	
+	<string name="stay_awake">Stay awake</string>
+	<string name="stay_awake_desc">Don\'t allow the phone to go to sleep.</string>
+		
 </resources>
 
 
