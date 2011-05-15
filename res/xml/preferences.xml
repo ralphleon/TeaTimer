@@ -13,23 +13,23 @@
 				
         <CheckBoxPreference
                 android:key="Vibrate"
-                android:title="Notification Vibrate"
-                android:summary="Should the timer notification Vibrate."
+                android:title="@string/notification_vibrate"
+                android:summary="@string/notification_vibrate_desc"
                 android:defaultValue="True" />
         
         <CheckBoxPreference
                 android:key="LED"
-                android:title="LED Notification"
-                android:summary="Blink the LED lights during the notification." 
+                android:title="@string/led_Notification"
+                android:summary="@string/led_Notification_desc" 
                 android:defaultValue="True" />
         		
     </PreferenceCategory>
     
-    <PreferenceCategory android:title="Visual">
+    <PreferenceCategory android:title="@string/visual">
     
 	    <ListPreference
-			android:title="Color Theme"
-			android:summary="Select the theme for the visualization"
+			android:title="@string/color_theme"
+			android:summary="@string/color_theme_desc"
 			android:key="Theme"
 			android:entries="@array/themes"
 			android:entryValues="@array/themeValues" />
@@ -37,16 +37,16 @@
     </PreferenceCategory>
     
     
-    <PreferenceCategory android:title="Misc">
+    <PreferenceCategory android:title="@string/misc">
              <CheckBoxPreference
                 android:key="NagSilent"
-                android:title="Nag Dialog"
-                android:summary="When the phone is set to silent show a nag dialog." 
+                android:title="@string/nag_dialog"
+                android:summary="@string/nag_dialog_desc" 
                 android:defaultValue="True" />
              <CheckBoxPreference
                 android:key="WakeLock"
-                android:title="Stay Awake"
-                android:summary="Don't allow the phone to go to sleep." 
+                android:title="@string/stay_awake"
+                android:summary="@string/stay_awake_desc" 
                 android:defaultValue="False" />
     </PreferenceCategory>
     

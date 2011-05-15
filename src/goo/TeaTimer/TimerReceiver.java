@@ -32,7 +32,7 @@ public class TimerReceiver extends BroadcastReceiver
         String notificationUri = settings.getString("NotificationUri", "android.resource://goo.TeaTimer/" + R.raw.big_ben);
         	
 		CharSequence text = context.getText(R.string.Notification);
-		CharSequence textLatest = "Timer for " + setTimeStr;
+		CharSequence textLatest = context.getText(R.string.timer_for) + setTimeStr;
 		
         Notification notification = new Notification(R.drawable.notification,
         		text,
