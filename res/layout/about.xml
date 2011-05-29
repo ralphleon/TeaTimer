@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2011 Djiko <gilles+android@coulais.net>
+
+This file is part of the Android TeaTimer Application.
+
+Licensed under the GNU GPL, Version 3.0 (the "License");
+
+TODO  : Adapter le texte de la licence 
+
+-->
+<LinearLayout 	android:layout_width="fill_parent"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_height="fill_parent" 
+				android:orientation="vertical"
+				android:paddingLeft="5px">
+	
+	<LinearLayout 	android:layout_width="fill_parent"
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_height="wrap_content" 
+				android:orientation="vertical">
+
+		<TextView 	android:layout_width="fill_parent" 
+					android:layout_gravity="center"
+					android:id="@+id/about_title"
+					android:layout_height="fill_parent" 
+					android:textSize="20dip">
+		</TextView>	
+	<!-- 
+		<ImageView	android:layout_width="wrap_content"
+					android:layout_gravity="center" 
+					android:layout_height="wrap_content"
+					android:src="@drawable/icon" 
+					android:layout_marginTop="10dip">
+		</ImageView>
+		 -->
+	</LinearLayout>
+
+	<ScrollView android:layout_width="fill_parent"
+				android:layout_height="fill_parent">
+		
+		<LinearLayout 	android:layout_width="fill_parent" 
+						android:layout_marginRight="10dip"
+						android:layout_height="fill_parent" 
+						android:orientation="vertical">
+
+			
+			<TextView 		android:layout_width="wrap_content"
+							android:textSize="12dip" 
+							android:layout_height="wrap_content"
+							android:text="@string/about_details" 
+							android:layout_marginTop="20dip">
+			</TextView>
+			<TextView 		android:layout_width="wrap_content"
+							android:textSize="12dip" 
+							android:layout_height="wrap_content"
+							android:text="@string/about_details_more" 
+							android:layout_marginTop="20dip">
+			</TextView>
+		</LinearLayout>
+	</ScrollView>
+
+</LinearLayout>
+

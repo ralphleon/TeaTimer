@@ -12,7 +12,7 @@
 package goo.TeaTimer;
 
 import goo.TeaTimer.Animation.TimerAnimation;
-import goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
+// import goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
 import goo.TeaTimer.widget.NNumberPickerDialog;
 import goo.TeaTimer.widget.NumberPicker;
 import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
@@ -21,18 +21,24 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+//import com.teleca.jamendo.R;
+//import com.teleca.jamendo.dialog.AboutDialog;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,6 +47,7 @@ import android.os.SystemClock;
 import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,6 +71,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	
 	/** Menu item ids */
 	private final static int PREF=0;
+	private final static int ABOUT=1;
 	
 	/** Macros for our dialogs */
 	private final static int NUM_PICKER_DIALOG = 0, ALERT_DIALOG = 1;
@@ -178,7 +186,11 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	MenuItem item = menu.add(0, PREF, 0, getResources().getString(R.string.prefs));
-    	item.setIcon(android.R.drawable.ic_menu_preferences);   	
+    	MenuItem about = menu.add(1,1,0, getResources().getString(R.string.about));
+    	    	
+    	item.setIcon(android.R.drawable.ic_menu_preferences);
+    	about.setIcon(android.R.drawable.ic_menu_info_details);
+    	
     	return super.onCreateOptionsMenu(menu);
     }
     
@@ -192,6 +204,35 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 			case PREF:
 				startActivity(new Intent(this, TimerPrefActivity.class));	
 				break;
+				
+			case ABOUT:
+				//new TimerAboutDialog(this).show();
+				//break;
+				LayoutInflater li = LayoutInflater.from(this);
+	            View view = li.inflate(R.layout.about, null);
+				
+				Builder p = new AlertDialog.Builder(this).setView(view);
+	            final AlertDialog alrt = p.create();
+	            alrt.setIcon(R.drawable.icon);
+	            alrt.setTitle(getString(R.string.about_title));
+	            alrt.setButton(AlertDialog.BUTTON_NEUTRAL,
+	                    getString(R.string.about_website),
+	                    new DialogInterface.OnClickListener() {
+	                        public void onClick(DialogInterface dialog,
+	                                int whichButton) {
+	                            Uri uri = Uri.parse("https://github.com/ralphleon/TeaTimer");
+	                            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+	                        }
+	                    });
+	            alrt.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.ok),
+	                    new DialogInterface.OnClickListener() {
+	                        public void onClick(DialogInterface dialog,
+	                                int whichButton) {
+	                        }
+	                    });
+	            alrt.show();
+	            return true;
+				
 			default:
 				return false;
 		}		
