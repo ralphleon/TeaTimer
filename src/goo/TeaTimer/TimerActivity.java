@@ -12,7 +12,6 @@
 package goo.TeaTimer;
 
 import goo.TeaTimer.Animation.TimerAnimation;
-// import goo.TeaTimer.Animation.TimerAnimation.TimerDrawing;
 import goo.TeaTimer.widget.NNumberPickerDialog;
 import goo.TeaTimer.widget.NumberPicker;
 import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
@@ -20,9 +19,6 @@ import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-//import com.teleca.jamendo.R;
-//import com.teleca.jamendo.dialog.AboutDialog;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -38,7 +34,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
-import android.net.Uri;
+// import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -215,16 +211,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 	            final AlertDialog alrt = p.create();
 	            alrt.setIcon(R.drawable.icon);
 	            alrt.setTitle(getString(R.string.about_title));
-	            alrt.setButton(AlertDialog.BUTTON_NEUTRAL,
-	                    getString(R.string.about_website),
-	                    new DialogInterface.OnClickListener() {
-	                        public void onClick(DialogInterface dialog,
-	                                int whichButton) {
-	                            Uri uri = Uri.parse("https://github.com/ralphleon/TeaTimer");
-	                            startActivity(new Intent(Intent.ACTION_VIEW, uri));
-	                        }
-	                    });
-	            alrt.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.ok),
+	            alrt.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.close),
 	                    new DialogInterface.OnClickListener() {
 	                        public void onClick(DialogInterface dialog,
 	                                int whichButton) {

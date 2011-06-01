@@ -40,13 +40,15 @@
 	<string name="stay_awake_desc">Don\'t allow the phone to go to sleep.</string>
 	
 	<!-- About -->
-	<string name="ok">Close</string>
+	<string name="close">Close</string>
 	<string name="about">About</string>
 	<string name="about_website">Tea Timer on Github</string>
 	<string name="about_title">About Tea Timer</string>
-	<string name="about_details">TeaTimer will help you make sure your tea is there on time, not too early, not too late.\n\nAs Tea Timer is a free software (as in free speech, not as in free beer), you can also use it for your noodles :) .</string>
-	<string name="about_details_more">Tea Timer is free software, released under the GNU GPL version 3. Get more information on http://www.gnu.org/copyleft/gpl.html</string>
-	
+	<string name="about_details_desc">TeaTimer will help you make sure your tea is there on time, not too early, not too late.\n\nTea Timer is a free software (as in free speech, not as in free beer), you can also use it for your spaghetti.</string>
+	<string name="about_details_licence">TeaTimer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.</string>
+	<string name="about_details_url">http://www.gnu.org/licenses/gpl.html</string>
+	<string name="about_site">Get the latest version of the source code on Github.</string>
+	<string name="about_site_url">https://github.com/ralphleon/TeaTimer</string>	
 	
 	
 		
