@@ -38,4 +38,15 @@
 	
 	<string name="stay_awake">Rester éveillé</string>
 	<string name="stay_awake_desc">Empêcher le téléphone de se mettre en veille.</string>
+	
+	<!-- About -->
+	<string name="close">Fermer</string>
+	<string name="about">À propos</string>
+	<string name="about_website">Tea Timer sur Github</string>
+	<string name="about_title">À propos de Tea Timer</string>
+	<string name="about_details_desc">Tea timer vous aidera à avoir un thé prêt à l\'heure, ni trop tôt, ni trop tard.\n\nTea Timer est un logiciel libre, vous pouvez aussi l\'utiliser pour vos spaghettis.</string>
+	<string name="about_details_licence">TeaTimer est un logiciel libre : vous pouvez le redistribuer ou le modifier selon les termes de la Licence Publique Générale GNU, telle que publiée par la Free Software Foundation, soit dans sa version3, ou dans n\'importe quelle version plus récente.</string>
+	<string name="about_details_url">http://www.gnu.org/licenses/gpl.html</string>
+	<string name="about_site">La dernière version du code source est disponible sur Github.</string>
+	<string name="about_site_url">https://github.com/ralphleon/TeaTimer</string>	
 </resources>
