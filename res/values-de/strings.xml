@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tea Timer</string>
+	<string name="Start">Timer setzen</string>
+	<string name="Stop">Zurücksetzen</string>
+
+	<string name="Notification">Timer abgelaufen!</string>
+	<string name="InputTitle">Stunde:Min.Sek</string>
+
+	<string name="warning_text">Das Telefon ist im lautlosen Modus! Vibration und Töne werden unterdrückt!</string>
+	<string name="warning_title">Warnung</string>
+	<string name="warning_button">Ok</string>
+	
+	<string name="timer_for">Timer für </string>
+	
+	<string name="prefs">Einstellungen</string>
+	
+	<!-- Preferences -->
+	<string name="notification">Benachrichtigung</string>
+	<string name="notification_sound">Benachrichtigungston</string>
+	<string name="notification_sound_desc">Der Ton der Benachrichtigung.</string>
+	
+	<string name="notification_vibrate">Vibration bei Benachrichtigung</string>
+	<string name="notification_vibrate_desc">Soll der der Timer vibrieren?</string>
+	
+	<string name="led_Notification">LED Benachrichtigung</string>
+	<string name="led_Notification_desc">Lässt die LED während der Benachrichtigung blinken.</string>
+	
+	<string name="visual">Erscheinungsbild</string>
+	
+	<string name="color_theme">Farben-Theme</string>
+	<string name="color_theme_desc">Wähle das Theme für die Anzeige.</string>
+	
+	<string name="misc">Sonstige</string>
+	
+	<string name="nag_dialog">Nerfender Dialog</string>
+	<string name="nag_dialog_desc">Zeige einen nerfenden Dialog wenn lautlos.</string>
+	
+	<string name="stay_awake">Bildschirm anlassen</string>
+	<string name="stay_awake_desc">Das Telefon wird den Bildschrim nicht ausschalten.</string>
+		
+	<!-- About -->
+	<string name="close">Schließen</string>
+	<string name="about">Info</string>
+	<string name="about_website">Tea Timer auf Github</string>
+	<string name="about_title">Über Tea Timer</string>
+	<string name="about_details_desc">TeaTimer hilft dir deinen Tee richtig zu kochen.\n\nTea Timer ist freie Software (nicht im Sinne von Kostenlos) und du kannst sie auch für die Spaghetti nutzen.</string>
+	<string name="about_details_licence">TeaTimer ist freie Software: Du kannst es unter den Bedingungen der GNU General Public License der Version 3 verbreiten, verändern etc.</string>
+	<string name="about_details_url">http://www.gnu.org/licenses/gpl.html</string>
+	<string name="about_site">Auf Github gibt es die aktuelle Version des Quellcodes.</string>
+	<string name="about_site_url">https://github.com/ralphleon/TeaTimer</string>	
+		
+</resources>
+
+
