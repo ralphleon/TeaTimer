@@ -5,7 +5,7 @@
 	<string name="Stop">Clear</string>
 
 	<string name="Notification">Tea time!</string>
-	<string name="InputTitle">Hour:Min.Sec</string>
+	<string name="InputTitle">Hour:Min:Sec</string>
 
 	<string name="warning_text">The phone is in silent mode! Notification vibration and sound will be supressed.</string>
 	<string name="warning_title">Warning</string>

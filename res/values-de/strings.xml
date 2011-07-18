@@ -5,7 +5,7 @@
 	<string name="Stop">Zurücksetzen</string>
 
 	<string name="Notification">Timer abgelaufen!</string>
-	<string name="InputTitle">Stunde:Min.Sek</string>
+	<string name="InputTitle">Stunde:Min:Sek</string>
 
 	<string name="warning_text">Das Telefon ist im lautlosen Modus! Vibration und Töne werden unterdrückt!</string>
 	<string name="warning_title">Warnung</string>

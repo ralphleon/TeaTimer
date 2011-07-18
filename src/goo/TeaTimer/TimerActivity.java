@@ -347,7 +347,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				int [] inc = {1,1,1};
 				int [] start = {0,0,0};
 				int [] end = {23,59,59};
-				String [] sep = {":",".",""};
+				String [] sep = {":",":",""};
 				
 				NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
 														NumberPicker.TWO_DIGIT_FORMATTER,
