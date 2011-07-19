@@ -11,7 +11,7 @@
 	<string name="warning_title">Warning</string>
 	<string name="warning_button">Ok</string>
 	
-	<string name="timer_for">Timer for </string>
+	<string name="timer_for">"Timer for "</string>
 	
 	<string name="prefs">Preferences</string>
 	
