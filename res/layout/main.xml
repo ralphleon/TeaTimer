@@ -9,20 +9,20 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:layout_marginLeft="10px"
-	android:layout_marginRight="10px"
-	android:paddingLeft="30px"
-	android:paddingRight="30px"
+	android:layout_marginLeft="10dp"
+	android:layout_marginRight="10dp"
+	android:paddingLeft="30dp"
+	android:paddingRight="30dp"
 	android:background="@drawable/border"
-	android:paddingBottom="15px" android:layout_marginTop="15px">
+	android:paddingBottom="15dp" android:layout_marginTop="15dp">
 	
 	<TextView 
 		android:id="@+id/label"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content" 
 		android:text="00:00"
-		android:textSize="80px"
-		android:gravity="center" android:paddingBottom="5px"/>
+		android:textSize="80dp"
+		android:gravity="center" android:paddingBottom="5dp"/>
 		
 	<LinearLayout 
 		android:layout_width="fill_parent"
@@ -33,29 +33,29 @@
 	
 		<ImageButton 
 			android:id="@+id/pauseButton"
-			android:layout_height="50px" 
+			android:layout_height="50dp"
 			android:layout_width="fill_parent"
 			android:layout_weight=".5"
 			android:src="@drawable/pause"
-			android:paddingLeft="15px"
+			android:paddingLeft="15dp"
 			/>
 		
 		<ImageButton 
 			android:id="@+id/cancelButton"
-			android:layout_height="50px" 
+			android:layout_height="50dp"
 			android:layout_width="fill_parent"
 			android:layout_weight=".5"
 			android:src="@drawable/cancel"
-			android:paddingLeft="15px"
+			android:paddingLeft="15dp"
 			/>
 			
 		<Button 
 			android:id="@+id/setButton"
-			android:layout_height="50px" 
+			android:layout_height="50dp"
 			android:layout_width="fill_parent"
 			android:text="@string/Start"
 			android:layout_weight=".5"
-			android:textSize="20px"
+			android:textSize="20dp"
 			android:drawableLeft="@drawable/set"
 			/>
 	</LinearLayout>
@@ -63,7 +63,7 @@
 
 <goo.TeaTimer.Animation.TimerAnimation
 	android:id="@+id/imageView"
-	android:layout_margin="20px"
+	android:layout_margin="20dp"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:gravity="center"
