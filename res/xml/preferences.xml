@@ -48,6 +48,12 @@
                 android:title="@string/stay_awake"
                 android:summary="@string/stay_awake_desc" 
                 android:defaultValue="False" />
+             <EditTextPreference
+                android:numeric="integer"
+                android:key="RepeatRate"
+                android:title="@string/repeat_rate"
+                android:summary="@string/repeat_rate_desc"
+                android:defaultValue="7" />
     </PreferenceCategory>
     
  

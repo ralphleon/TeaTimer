@@ -38,6 +38,9 @@
 	
 	<string name="stay_awake">Stay awake</string>
 	<string name="stay_awake_desc">Don\'t allow the phone to go to sleep.</string>
+
+	<string name="repeat_rate">Repeat rate</string>
+	<string name="repeat_rate_desc">Button repeats per second on long press in the number picker.</string>
 	
 	<!-- About -->
 	<string name="close">Close</string>

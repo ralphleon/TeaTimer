@@ -387,6 +387,16 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				
 				NNumberPickerDialog dialog = (NNumberPickerDialog)d;
 				dialog.setInitialValues(init);
+
+				// Set repeat rate
+				int rate;
+				try {
+					rate = Integer.parseInt(mSettings.getString("RepeatRate", ""));
+				}
+				catch (NumberFormatException ex) {
+					rate = 7;
+				}
+				dialog.setSpeed(1000 / (rate > 0 ? rate : 1));
 			}		
 		}
 		
