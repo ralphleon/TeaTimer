@@ -26,7 +26,7 @@
 	<string name="led_Notification">LED Notification</string>
 	<string name="led_Notification_desc">Blink the LED lights during the notification.</string>
 	
-	<string name="visual">Visuel</string>
+	<string name="visual">Visual</string>
 	
 	<string name="color_theme">Color Theme</string>
 	<string name="color_theme_desc">Select the theme for the visualization</string>
