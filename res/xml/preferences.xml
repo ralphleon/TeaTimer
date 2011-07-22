@@ -22,6 +22,12 @@
                 android:title="@string/led_Notification"
                 android:summary="@string/led_Notification_desc" 
                 android:defaultValue="True" />
+
+        <CheckBoxPreference
+                android:key="AutoClear"
+                android:title="@string/auto_clear"
+                android:summary="@string/auto_clear_desc"
+                android:defaultValue="False" />
         		
     </PreferenceCategory>
     
