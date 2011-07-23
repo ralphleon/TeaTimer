@@ -27,7 +27,7 @@
 	<string name="led_Notification_desc">Blink the LED lights during the notification.</string>
 
 	<string name="auto_clear">Clear automatically</string>
-	<string name="auto_clear_desc">Clear notification automatically after 30 seconds.</string>
+	<string name="auto_clear_desc">Clear notification automatically after a few seconds.</string>
 	
 	<string name="visual">Visual</string>
 	

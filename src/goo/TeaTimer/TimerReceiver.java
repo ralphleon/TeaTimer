@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -87,12 +88,30 @@ public class TimerReceiver extends BroadcastReceiver
             PendingIntent.getBroadcast(appContext, 0, intent,
                                        PendingIntent.FLAG_CANCEL_CURRENT);
 
-        // Schedule the cancellation
         if (settings.getBoolean("AutoClear", false)) {
+            // Determine duration of notification sound
+            int duration = 5000;
+            if (notification.sound != null) {
+                MediaPlayer player = new MediaPlayer();
+                try {
+                    player.setDataSource(context, notification.sound);
+                    player.prepare();
+                    duration = Math.max(duration, player.getDuration() + 2000);
+                }
+                catch (java.io.IOException ex) {
+                    Log.e(TAG, "Cannot get sound duration: " + ex);
+                    duration = 30000; // on error, default to 30 seconds
+                }
+                finally {
+                    player.release();
+                }
+            }
+            Log.v(TAG, "Notification duration: " + duration + " ms");
+            // Schedule the cancellation
             AlarmManager alarmMgr = (AlarmManager)context
                 .getSystemService(Context.ALARM_SERVICE);
             alarmMgr.set(AlarmManager.ELAPSED_REALTIME,
-                         SystemClock.elapsedRealtime() + 30000,
+                         SystemClock.elapsedRealtime() + duration,
                          pendingCancelIntent);
         }
 
