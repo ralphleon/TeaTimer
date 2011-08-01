@@ -21,6 +21,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 	private final int START_ANGLE = 270;
 	
 	private float mRadius = 75,mInnerRadius=30,mSecondRadius=90,mMsRadius=mSecondRadius+5;
+	private float scale;
 	
 	private Paint mCirclePaint,mInnerPaint,mArcPaint,mMsPaint,mTickerPaint;
 	
@@ -126,6 +127,7 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		mTickerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mTickerPaint.setColor(0xFFFFFFFF);
 		
+		scale = resources.getDisplayMetrics().density;
 		
 		if(mWidth != 0 && mHeight != 0) sizeChange(mWidth,mHeight);
 	}
@@ -135,12 +137,12 @@ class CircleAnimation implements TimerAnimation.TimerDrawing
 		mWidth = w;
 		mHeight = h;
 		
-		mMsRadius = Math.min(Math.min(w/2.0f,h/2.0f),MAX_SIZE);
+		mMsRadius = Math.min(Math.min(w/2.0f,h/2.0f),MAX_SIZE*scale);
 		mMsGap = mMsRadius * .95f;
 		mSecondRadius = mMsRadius * .97f;
 		mSecondGap = mMsRadius *.85f;
 		mRadius = mMsRadius * .85f;
-		mInnerRadius=30;
+		mInnerRadius=30*scale;
 		
 		int offset = 75;
 		

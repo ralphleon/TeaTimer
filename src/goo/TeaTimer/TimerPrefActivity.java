@@ -27,8 +27,8 @@ public class TimerPrefActivity extends PreferenceActivity
     	// Lets check out the media provider
         Cursor cursor = managedQuery(MediaStore.Audio.Media.INTERNAL_CONTENT_URI, 
         		cols, 
-        		MediaStore.Audio.AudioColumns.IS_RINGTONE + "==1",        	
-        		null, null);
+        		"is_ringtone OR is_notification",
+        		null, "is_ringtone, title_key");
          int i=0;
    
          CharSequence[] items = null;
