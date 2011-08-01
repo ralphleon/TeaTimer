@@ -1,5 +1,6 @@
 package goo.TeaTimer;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,23 +8,35 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class TimerReceiver extends BroadcastReceiver 
 {
 	private final static String TAG = TimerReceiver.class.getSimpleName();
+    private final static String CANCEL_NOTIFICATION = "CANCEL_NOTIFICATION";
 	
 	@Override
 	public void onReceive(Context context, Intent pintent) 
-	{	
+    {
+        NotificationManager mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Cancel notification and return...
+        if (CANCEL_NOTIFICATION.equals(pintent.getAction())) {
+            Log.v(TAG,"Cancelling notification...");
+            mNM.cancel(0);
+            return;
+        }
+
+        // ...or display a new one
+
 		Log.v(TAG,"Showing notification...");
 		
 		int setTime = pintent.getIntExtra("SetTime",0);
 		String setTimeStr = TimerUtils.time2humanStr(setTime);
-		
-		NotificationManager mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);  
 		
 		// Load the settings
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
@@ -65,6 +78,44 @@ public class TimerReceiver extends BroadcastReceiver
         notification.setLatestEventInfo(context, text,
                        textLatest, contentIntent);
 
+        // Create intent for cancelling the notification
+        Context appContext = context.getApplicationContext();
+        intent = new Intent(appContext, TimerReceiver.class);
+        intent.setAction(CANCEL_NOTIFICATION);
+
+        // Cancel the pending cancellation and create a new one
+        PendingIntent pendingCancelIntent =
+            PendingIntent.getBroadcast(appContext, 0, intent,
+                                       PendingIntent.FLAG_CANCEL_CURRENT);
+
+        if (settings.getBoolean("AutoClear", false)) {
+            // Determine duration of notification sound
+            int duration = 5000;
+            if (notification.sound != null) {
+                MediaPlayer player = new MediaPlayer();
+                try {
+                    player.setDataSource(context, notification.sound);
+                    player.prepare();
+                    duration = Math.max(duration, player.getDuration() + 2000);
+                }
+                catch (java.io.IOException ex) {
+                    Log.e(TAG, "Cannot get sound duration: " + ex);
+                    duration = 30000; // on error, default to 30 seconds
+                }
+                finally {
+                    player.release();
+                }
+            }
+            Log.v(TAG, "Notification duration: " + duration + " ms");
+            // Schedule the cancellation
+            AlarmManager alarmMgr = (AlarmManager)context
+                .getSystemService(Context.ALARM_SERVICE);
+            alarmMgr.set(AlarmManager.ELAPSED_REALTIME,
+                         SystemClock.elapsedRealtime() + duration,
+                         pendingCancelIntent);
+        }
+
+        // Show notification
         mNM.notify(0, notification);
 	}
 

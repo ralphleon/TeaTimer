@@ -22,6 +22,12 @@
                 android:title="@string/led_Notification"
                 android:summary="@string/led_Notification_desc" 
                 android:defaultValue="True" />
+
+        <CheckBoxPreference
+                android:key="AutoClear"
+                android:title="@string/auto_clear"
+                android:summary="@string/auto_clear_desc"
+                android:defaultValue="False" />
         		
     </PreferenceCategory>
     
@@ -48,6 +54,12 @@
                 android:title="@string/stay_awake"
                 android:summary="@string/stay_awake_desc" 
                 android:defaultValue="False" />
+             <EditTextPreference
+                android:numeric="integer"
+                android:key="RepeatRate"
+                android:title="@string/repeat_rate"
+                android:summary="@string/repeat_rate_desc"
+                android:defaultValue="7" />
     </PreferenceCategory>
     
  

@@ -5,13 +5,13 @@
 	<string name="Stop">Clear</string>
 
 	<string name="Notification">Tea time!</string>
-	<string name="InputTitle">Hour:Min.Sec</string>
+	<string name="InputTitle">Hour:Min:Sec</string>
 
 	<string name="warning_text">The phone is in silent mode! Notification vibration and sound will be supressed.</string>
 	<string name="warning_title">Warning</string>
 	<string name="warning_button">Ok</string>
 	
-	<string name="timer_for">Timer for </string>
+	<string name="timer_for">"Timer for "</string>
 	
 	<string name="prefs">Preferences</string>
 	
@@ -25,8 +25,11 @@
 	
 	<string name="led_Notification">LED Notification</string>
 	<string name="led_Notification_desc">Blink the LED lights during the notification.</string>
+
+	<string name="auto_clear">Clear automatically</string>
+	<string name="auto_clear_desc">Clear notification automatically after a few seconds.</string>
 	
-	<string name="visual">Visuel</string>
+	<string name="visual">Visual</string>
 	
 	<string name="color_theme">Color Theme</string>
 	<string name="color_theme_desc">Select the theme for the visualization</string>
@@ -38,6 +41,9 @@
 	
 	<string name="stay_awake">Stay awake</string>
 	<string name="stay_awake_desc">Don\'t allow the phone to go to sleep.</string>
+
+	<string name="repeat_rate">Repeat rate</string>
+	<string name="repeat_rate_desc">Button repeats per second on long press in the number picker.</string>
 	
 	<!-- About -->
 	<string name="close">Close</string>

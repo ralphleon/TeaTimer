@@ -324,7 +324,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
      * @param time in milliseconds
      */
 	public void updateLabel(int time){
-		
+        time += 999;  // round seconds upwards
 		String str = TimerUtils.time2str(time);
 		int size = TimerUtils.textSize(str);
 		mTimerLabel.setTextSize(size);
@@ -347,7 +347,7 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				int [] inc = {1,1,1};
 				int [] start = {0,0,0};
 				int [] end = {23,59,59};
-				String [] sep = {":",".",""};
+				String [] sep = {":",":",""};
 				
 				NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
 														NumberPicker.TWO_DIGIT_FORMATTER,
@@ -387,6 +387,16 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 				
 				NNumberPickerDialog dialog = (NNumberPickerDialog)d;
 				dialog.setInitialValues(init);
+
+				// Set repeat rate
+				int rate;
+				try {
+					rate = Integer.parseInt(mSettings.getString("RepeatRate", ""));
+				}
+				catch (NumberFormatException ex) {
+					rate = 7;
+				}
+				dialog.setSpeed(1000 / (rate > 0 ? rate : 1));
 			}		
 		}
 		

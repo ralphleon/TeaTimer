@@ -111,6 +111,16 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
             pickers.get(i).setCurrent(values[i]);
     }
 
+    public void setSpeed(int[] values) {
+        for (int i = 0; i < pickers.size(); i++)
+            pickers.get(i).setSpeed(values[i]);
+    }
+
+    public void setSpeed(int value) {
+        for (NumberPicker picker : pickers)
+            picker.setSpeed(value);
+    }
+
     public void onClick(DialogInterface dialog, int which) {
         if (mCallback != null) {
             int[] values = new int[pickers.size()];
