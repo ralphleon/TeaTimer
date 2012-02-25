@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
-import android.util.Log;
+//import android.util.Log;
 
 public class TimerPrefActivity extends PreferenceActivity 
 {
@@ -49,15 +49,18 @@ public class TimerPrefActivity extends PreferenceActivity
 	        	i++;
         	}
         
-	        cursor.close();   
+	        cursor.close();
 		}
         
-    	CharSequence [] entries = {"No Sound","Big Ben"};
-    	CharSequence [] entryValues = {"","android.resource://goo.TeaTimer/" + R.raw.big_ben};
-    	
-    	//Default value
-    	if(tone.getValue() == null) tone.setValue((String)entryValues[1]);
-    	
+        CharSequence [] entries = { getResources().getText(R.string.notification_no_sound),
+                                    getResources().getText(R.string.notification_default),
+                                    "Big Ben"};
+        CharSequence [] entryValues = {"", "SYSTEM_DEFAULT", "android.resource://goo.TeaTimer/" + R.raw.big_ben};
+
+        //Default value
+        if (tone.getValue() == null){
+            tone.setValue((String)entryValues[2]);
+        }
     	if( items != null && items.length > 0){
     		tone.setEntries(concat(entries,items));
     		tone.setEntryValues(concat(entryValues,itemUris));

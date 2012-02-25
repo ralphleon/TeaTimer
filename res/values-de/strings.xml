@@ -19,7 +19,9 @@
 	<string name="notification">Benachrichtigung</string>
 	<string name="notification_sound">Benachrichtigungston</string>
 	<string name="notification_sound_desc">Der Ton der Benachrichtigung.</string>
-	
+	<string name="notification_default">System-Benachrichtigung</string>
+	<string name="notification_no_sound">Kein Ton</string>
+			
 	<string name="notification_vibrate">Vibration bei Benachrichtigung</string>
 	<string name="notification_vibrate_desc">Soll der der Timer vibrieren?</string>
 	
