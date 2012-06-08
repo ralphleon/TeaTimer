@@ -52,8 +52,8 @@ public class TimerPrefActivity extends PreferenceActivity
 	        cursor.close();   
 		}
         
-    	CharSequence [] entries = {"No Sound","Big Ben"};
-    	CharSequence [] entryValues = {"","android.resource://goo.TeaTimer/" + R.raw.big_ben};
+    	CharSequence [] entries = {"No Sound","Big Ben","Bell"};
+    	CharSequence [] entryValues = {"","android.resource://goo.TeaTimer/" + R.raw.big_ben,"android.resource://goo.TeaTimer/" + R.raw.bell};
     	
     	//Default value
     	if(tone.getValue() == null) tone.setValue((String)entryValues[1]);
