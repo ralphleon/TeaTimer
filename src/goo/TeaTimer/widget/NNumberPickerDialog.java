@@ -29,12 +29,21 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.Gallery;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 
 /** Dialog box with an arbitrary number of number pickers */
 public class NNumberPickerDialog extends AlertDialog implements OnClickListener {
@@ -45,6 +54,17 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
 
     private final List<NumberPicker>      pickers = new LinkedList<NumberPicker>();
     private final OnNNumberPickedListener mCallback;
+
+    private int hsel;
+    private int msel;
+    private int ssel;
+
+    private GestureDetector gestureDetector;
+
+
+	private Gallery hour;
+	private Gallery min;
+	private Gallery sec;
 
     /** Instantiate the dialog box.
      *
@@ -73,61 +93,96 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.n_number_picker_dialog, null);
         setView(view);
-        LinearLayout container = (LinearLayout)view;
 
-        setTitle(title);
+        //setTitle(title);
         LayoutParams npLayout = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.FILL_PARENT);
         npLayout.gravity = 1;
         LayoutParams sepLayout = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.FILL_PARENT);
-        for(int i = 0; i < incrementBy.length; i++) {
-            NumberPicker np = new NumberPicker(context, null);
-            np.setFormatter(format[i]);
-            np.setIncrementBy(incrementBy[i]);
-            np.setLayoutParams(npLayout);
-            np.setRange(start[i], end[i]);
-            np.setCurrent(initialValue[i]);
+		String [] numbers = new String[61];
+		for(int i = 0; i < 61; i++) {
+			numbers[i] = Integer.toString(i);
+		}
+		hour = (Gallery) view.findViewById(R.id.gallery_hour);
+		min = (Gallery) view.findViewById(R.id.gallery_min);
+		sec = (Gallery) view.findViewById(R.id.gallery_sec);
+		
+		ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(context, R.layout.gallery_item, numbers);        
 
-            container.addView(np);
-            pickers.add(np);
+		hour.setAdapter(adapter1);
+		min.setAdapter(adapter1);
+		sec.setAdapter(adapter1);
 
-            if(separators != null && separators[i] != null) {
-                TextView text = new TextView(context);
-                text.setText(separators[i]);
-                if(separators[i].length() < 3)
-                    text.setTextSize(48);
-                else
-                    text.setTextSize(20);
-                text.setGravity(Gravity.CENTER);
-                text.setLayoutParams(sepLayout);
-                container.addView(text);
-            }
-        }
+        gestureDetector = new GestureDetector(new MyGestureDetector());
+        hour.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent ev) {
+					return gestureDetector.onTouchEvent(ev);
+			}
+        });
+        min.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent ev) {
+					return gestureDetector.onTouchEvent(ev);
+			}
+        });
+        sec.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent ev) {
+					return gestureDetector.onTouchEvent(ev);
+			}
+        });
+
     }
+
+    class MyGestureDetector extends SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+			velocityX=velocityX/5;
+
+			return super.onFling(e1, e2, velocityX, velocityY);
+		}
+
+ 
+        @Override
+        public boolean onDown(MotionEvent e) {
+			return super.onDown(e);
+	        //return true;
+        }
+
+    }
+
     
     public void setInitialValues(int[] values) {
+		if(true)
+			return;
         for(int i = 0; i < pickers.size(); i++)
             pickers.get(i).setCurrent(values[i]);
     }
 
     public void setSpeed(int[] values) {
+		if(true)
+			return;
+
         for (int i = 0; i < pickers.size(); i++)
             pickers.get(i).setSpeed(values[i]);
     }
 
     public void setSpeed(int value) {
+		if(true)
+			return;
+
         for (NumberPicker picker : pickers)
             picker.setSpeed(value);
     }
 
     public void onClick(DialogInterface dialog, int which) {
         if (mCallback != null) {
-            int[] values = new int[pickers.size()];
-            for(int i = 0; i < pickers.size(); i++) {
-                pickers.get(i).clearFocus();
-                values[i] = pickers.get(i).getCurrent();
-            }
+			
+			hsel = hour.getSelectedItemPosition();
+			msel = min.getSelectedItemPosition();
+			ssel = sec.getSelectedItemPosition();
+			
+            int[] values = {hsel,msel,ssel};
             mCallback.onNumbersPicked(values);
         }
     }

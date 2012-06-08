@@ -16,12 +16,57 @@
 ** limitations under the License.
 */
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/ScrollView01" 
+	android:layout_width="match_parent" 
+	android:layout_height="match_parent"
+	android:scrollbars="vertical">
+	<LinearLayout
         android:id="@+id/container"
         android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:orientation="vertical"
         android:padding="5dip">
-
-</LinearLayout>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text="Hours:"
+			android:textSize="17sp"
+		/>
+		<Gallery 
+			android:layout_width="match_parent" 
+			android:id="@+id/gallery_hour" 
+			android:spacing="6dp" 
+			android:layout_height="60dp"/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:text="Minutes:"
+			android:textSize="17sp"
+		/>
+		<Gallery 
+			android:layout_width="match_parent" 
+			android:id="@+id/gallery_min" 
+			android:spacing="6dp" 
+			android:textColor="@color/gallery_item_color" 
+			android:layout_height="60dp"/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:textColor="@color/gallery_item_color" 
+			android:text="Seconds:"
+			android:textSize="17sp"
+		/>
+		<Gallery 
+			android:layout_width="match_parent" 
+			android:id="@+id/gallery_sec" 
+			android:textColor="@color/gallery_item_color" 
+			android:spacing="6dp" 
+			android:layout_height="60dp"/>
+	</LinearLayout>
+</ScrollView>
