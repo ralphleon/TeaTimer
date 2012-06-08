@@ -71,16 +71,9 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
      * @param context
      * @param callBack callback function to get the numbers you requested
      * @param title title of the dialog box
-     * @param initialValue initial picker values array
-     * @param incrementBy picker increment by array
-     * @param start picker range start array
-     * @param end picker range end array
-     * @param separators text separating the spinners. whole array, or individual
-     *        elements can be null
      */
     public NNumberPickerDialog(Context context, OnNNumberPickedListener callBack,
-            String title, int[] initialValue, int[] incrementBy, int[] start,
-            int[] end, String[] separators,NumberPicker.Formatter [] format)
+            String title)
     {
         super(context);
         
@@ -151,29 +144,6 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
 
     }
 
-    
-    public void setInitialValues(int[] values) {
-		if(true)
-			return;
-        for(int i = 0; i < pickers.size(); i++)
-            pickers.get(i).setCurrent(values[i]);
-    }
-
-    public void setSpeed(int[] values) {
-		if(true)
-			return;
-
-        for (int i = 0; i < pickers.size(); i++)
-            pickers.get(i).setSpeed(values[i]);
-    }
-
-    public void setSpeed(int value) {
-		if(true)
-			return;
-
-        for (NumberPicker picker : pickers)
-            picker.setSpeed(value);
-    }
 
     public void onClick(DialogInterface dialog, int which) {
         if (mCallback != null) {

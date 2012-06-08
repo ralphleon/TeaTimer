@@ -341,21 +341,8 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		switch(id){
 		
 			case NUM_PICKER_DIALOG:
-			{
-				int [] timeVec = TimerUtils.time2Mhs(mLastTime);
-				int [] init = {timeVec[0],timeVec[1],timeVec[2]};
-				int [] inc = {1,1,1};
-				int [] start = {0,0,0};
-				int [] end = {23,59,59};
-				String [] sep = {":",":",""};
-				
-				NumberPicker.Formatter  [] format = {	NumberPicker.TWO_DIGIT_FORMATTER,
-														NumberPicker.TWO_DIGIT_FORMATTER,
-														NumberPicker.TWO_DIGIT_FORMATTER};
-				
-				d = new NNumberPickerDialog(	this, this, getResources().getString(R.string.InputTitle), 
-												init, inc, start, end, sep,format);
-			}break;
+				d = new NNumberPickerDialog(	this, this, getResources().getString(R.string.InputTitle));
+				break;
 			
 			case ALERT_DIALOG:
 			{
@@ -371,36 +358,6 @@ public class TimerActivity extends Activity implements OnClickListener,OnNNumber
 		}
 		
 		return d;
-	}
-	
-	
-	/** {@inheritDoc} */
-	@Override
-	protected void onPrepareDialog(int id,Dialog d)
-	{
-		switch(id){
-		
-			case NUM_PICKER_DIALOG:
-			{
-				int [] timeVec = TimerUtils.time2Mhs(mLastTime);
-				int [] init = {timeVec[0],timeVec[1],timeVec[2]};
-				
-				NNumberPickerDialog dialog = (NNumberPickerDialog)d;
-				dialog.setInitialValues(init);
-
-				// Set repeat rate
-				int rate;
-				try {
-					rate = Integer.parseInt(mSettings.getString("RepeatRate", ""));
-				}
-				catch (NumberFormatException ex) {
-					rate = 7;
-				}
-				dialog.setSpeed(1000 / (rate > 0 ? rate : 1));
-			}		
-		}
-		
-		super.onPrepareDialog(id, d);
 	}
 	
 	
