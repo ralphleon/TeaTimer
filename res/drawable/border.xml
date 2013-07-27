@@ -8,13 +8,5 @@
     <padding android:left="7dp" android:top="7dp" 
             android:right="7dp" android:bottom="7dp" /> 
     <corners android:radius="8dp" /> 
-    
-    <gradient
-     			android:height="100dp"
-     			android:dither="true"
-     			android:thickness="4dp"
-     			android:antialias="true"
-                android:startColor="#FF2F2F2F"
-                android:endColor="#00111111"
-                android:angle="270"/>
+
 </shape> 
