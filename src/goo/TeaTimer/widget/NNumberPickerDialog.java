@@ -52,7 +52,6 @@ public class NNumberPickerDialog extends AlertDialog implements OnClickListener 
         void onNumbersPicked(int[] number);
     }
 
-    private final List<NumberPicker>      pickers = new LinkedList<NumberPicker>();
     private final OnNNumberPickedListener mCallback;
 
     private int hsel;

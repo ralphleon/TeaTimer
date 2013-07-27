@@ -13,7 +13,6 @@ package goo.TeaTimer;
 
 import goo.TeaTimer.Animation.TimerAnimation;
 import goo.TeaTimer.widget.NNumberPickerDialog;
-import goo.TeaTimer.widget.NumberPicker;
 import goo.TeaTimer.widget.NNumberPickerDialog.OnNNumberPickedListener;
 
 import java.util.Date;
