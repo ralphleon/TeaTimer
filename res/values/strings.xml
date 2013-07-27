@@ -7,7 +7,7 @@
 	<string name="Notification">Tea time!</string>
 	<string name="InputTitle">Hour:Min:Sec</string>
 
-	<string name="warning_text">The phone is in silent mode! Notification vibration and sound will be supressed.</string>
+	<string name="warning_text">The phone is in silent mode! Notification vibration and sound will be suppressed.</string>
 	<string name="warning_title">Warning</string>
 	<string name="warning_button">Ok</string>
 	
@@ -19,7 +19,9 @@
 	<string name="notification">Notification</string>
 	<string name="notification_sound">Notification Diddy</string>
 	<string name="notification_sound_desc">The notification\'s sound effects.</string>
-	
+	<string name="notification_default">System default</string>
+	<string name="notification_no_sound">No sound</string>
+		
 	<string name="notification_vibrate">Notification Vibrate</string>
 	<string name="notification_vibrate_desc">Should the timer notification Vibrate.</string>
 	
@@ -54,7 +56,8 @@
 	<string name="about_details_licence">TeaTimer is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.</string>
 	<string name="about_details_url">http://www.gnu.org/licenses/gpl.html</string>
 	<string name="about_site">Get the latest version of the source code on Github.</string>
-	<string name="about_site_url">https://github.com/ralphleon/TeaTimer</string>	
+	<string name="about_site_url">https://github.com/ralphleon/TeaTimer</string>
+		
 	
 	
 		

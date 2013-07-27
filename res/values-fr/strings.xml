@@ -19,6 +19,8 @@
 	<string name="notification">Notification</string>
 	<string name="notification_sound">Avertissement sonore</string>
 	<string name="notification_sound_desc">Effet sonore de la notification.</string>
+	<string name="notification_default">Avertissement standard</string>
+	<string name="notification_no_sound">Silence</string>
 	
 	<string name="notification_vibrate">Notification vibrante</string>
 	<string name="notification_vibrate_desc">Faire vibrer le téléphone pour la notification.</string>

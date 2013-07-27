@@ -65,14 +65,24 @@ public class TimerReceiver extends BroadcastReceiver
         }
         
         // Play a sound!
-        if(notificationUri != ""){
-			Uri uri = Uri.parse(notificationUri);
-	      	notification.sound = uri;
+        if(!notificationUri.toString().equals("")){
+            if (notificationUri.toString().equals("SYSTEM_DEFAULT")){
+                Log.v(TAG, "Using default sound for notification");
+                notification.defaults |= Notification.DEFAULT_SOUND;
+            }
+            else{
+                Log.v(TAG, "Using sound " + notificationUri.toString() + " for notification");
+                Uri uri = Uri.parse(notificationUri);
+                notification.sound = uri;
+            }
         }
-        
+        else{
+            Log.v(TAG, "No sound is played");
+        }
+
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        
-      	Intent intent = new Intent(context,TimerActivity.class);
+
+        Intent intent = new Intent(context,TimerActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context,  0,intent, Intent.FLAG_ACTIVITY_NEW_TASK);
 
         notification.setLatestEventInfo(context, text,
@@ -117,6 +127,6 @@ public class TimerReceiver extends BroadcastReceiver
 
         // Show notification
         mNM.notify(0, notification);
-	}
+    }
 
 }
