@@ -56,7 +56,6 @@
 			android:text="@string/Start"
 			android:layout_weight=".5"
 			android:textSize="20dp"
-			android:drawableLeft="@drawable/set"
 			/>
 	</LinearLayout>
 </LinearLayout>
