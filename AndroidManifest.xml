@@ -20,10 +20,10 @@
             </intent-filter>
         </activity>
    	 	
-	<receiver android:name=".TimerReceiver" ></receiver>
-</application>
+		<receiver android:name=".TimerReceiver" ></receiver>
+	</application>
 
-	 <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4" />
+	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4" />
 
-<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+	<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
 </manifest> 
